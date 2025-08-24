@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root { color-scheme: light dark; }
+
+
+/* Subtle scrollbar */
+*{ scrollbar-width: thin; scrollbar-color: #9ca3af transparent; }
+
+
+/***** Form helpers *****/
+.input {
+@apply w-full rounded-2xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition;
+}
+.label { @apply text-xs font-medium text-gray-600 dark:text-gray-300; }
+.helper { @apply text-[11px] text-gray-500 dark:text-gray-400; }
+.error { @apply text-[11px] text-red-600 dark:text-red-400 mt-1; }
+.btn {
+@apply inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition active:scale-[.98] shadow-soft disabled:opacity-60 disabled:cursor-not-allowed;
+}
+.btn-primary { @apply bg-brand text-white hover:bg-blue-700; }
+.btn-ghost { @apply bg-transparent hover:bg-gray-100 dark:hover:bg-neutral-800; }
+.card { @apply rounded-3xl border border-gray-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md shadow-soft; }
