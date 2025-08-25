@@ -42,9 +42,24 @@ function LoginForm({ onSwitch, onForgotPassword }) {
     e.preventDefault();
     if (!validateForm()) return;
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setLoading(false);
+
+    try {
+      // TODO: Replace with real API request
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      if (formData.email === "test@example.com" && formData.password === "123456") {
+        localStorage.setItem("authToken", "sample_token");
+        window.location.href = "/dashboard"; 
+      } else {
+        setLoginError("Invalid email or password");
+      }
+    } catch (err) {
+      setLoginError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <motion.div

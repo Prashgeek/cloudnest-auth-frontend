@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
   return (
@@ -10,6 +12,13 @@ export default function App() {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/reset-password" element={<ResetPasswordForm token={new URLSearchParams(window.location.search).get('token')} onBack={() => window.history.back()} onSuccess={() => window.location.href = '/auth'} />} />
+        <Route
+          path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     </div>
