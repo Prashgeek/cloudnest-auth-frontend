@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion, AnimatePresence } from "framer-motion";
 import { Stars } from "@react-three/drei";
 import { Moon, Sun } from "lucide-react";
 
-// Import our new components
+// Import components
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 import ForgotPasswordForm from "../components/ForgotPasswordForm";
@@ -15,9 +15,19 @@ export default function AuthPage() {
   const [mode, setMode] = useState("login"); // "login", "signup", "forgot", "reset"
   const [darkMode, setDarkMode] = useState(false);
 
+  // Load saved theme on mount
+  useEffect(() => {
+    const savedMode = localStorage.getItem("darkMode") === "true";
+    setDarkMode(savedMode);
+    document.documentElement.classList.toggle("dark", savedMode);
+  }, []);
+
+  // Toggle & save theme
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle("dark");
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    document.documentElement.classList.toggle("dark", newMode);
+    localStorage.setItem("darkMode", newMode);
   };
 
   const renderAuthForm = () => {
@@ -61,31 +71,50 @@ export default function AuthPage() {
       <div className="absolute inset-0 -z-40 opacity-60">
         <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
           <ambientLight intensity={0.4} />
-          <Stars radius={120} depth={60} count={3000} factor={3} saturation={0.2} fade speed={0.5} />
+          <Stars
+            radius={120}
+            depth={60}
+            count={3000}
+            factor={3}
+            saturation={0.2}
+            fade
+            speed={0.5}
+          />
         </Canvas>
       </div>
 
       {/* Header */}
       <header className="relative z-10 w-full flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
-          {/* Your custom logo */}
-          <img src="/logo.png" alt="Cloudnest Logo" className="w-16 h-16 rounded-xl shadow-lg object-contain" />
+          {/* Logo */}
+          <img
+            src="/logo.png"
+            alt="Cloudnest Logo"
+            className="w-16 h-16 rounded-xl shadow-lg object-contain"
+          />
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-brand to-purple-600 bg-clip-text text-transparent">
-              Cloudnest
+              Cloudnest Drive
             </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400"></p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Secure cloud storage for everyone
+            </p>
           </div>
         </div>
 
         {/* Dark Mode Toggle */}
         <motion.button
           onClick={toggleDarkMode}
+          aria-label="Toggle dark mode"
           className="p-2 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          {darkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-gray-600" />}
+          {darkMode ? (
+            <Sun className="w-5 h-5 text-yellow-500" />
+          ) : (
+            <Moon className="w-5 h-5 text-gray-600" />
+          )}
         </motion.button>
       </header>
 
@@ -114,22 +143,31 @@ export default function AuthPage() {
               </motion.div>
             </AnimatePresence>
           </motion.div>
-
-          {/* Additional Options */}
-                  </motion.div>
+        </motion.div>
       </main>
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-6 px-6 border-t border-gray-200/50 dark:border-gray-700/50 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm">
-        <p className="text-xs text-gray-500 dark:text-gray-400">© 2025 Cloudnest. Secure cloud storage for everyone.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          © 2025 Cloudnest. Secure cloud storage for everyone.
+        </p>
         <div className="flex justify-center gap-6 mt-2">
-          <a href="#" className="text-xs text-gray-400 hover:text-brand transition-colors">
+          <a
+            href="#"
+            className="text-xs text-gray-400 hover:text-brand transition-colors"
+          >
             Privacy Policy
           </a>
-          <a href="#" className="text-xs text-gray-400 hover:text-brand transition-colors">
+          <a
+            href="#"
+            className="text-xs text-gray-400 hover:text-brand transition-colors"
+          >
             Terms of Service
           </a>
-          <a href="#" className="text-xs text-gray-400 hover:text-brand transition-colors">
+          <a
+            href="#"
+            className="text-xs text-gray-400 hover:text-brand transition-colors"
+          >
             Support
           </a>
         </div>
