@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc"; // ✅ Google icon
 import InputField from "./InputField";
 import Button from "./Button";
 
@@ -12,6 +13,7 @@ function LoginForm({ onSwitch, onForgotPassword }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,14 +44,18 @@ function LoginForm({ onSwitch, onForgotPassword }) {
     e.preventDefault();
     if (!validateForm()) return;
     setLoading(true);
+    setLoginError("");
 
     try {
-      // TODO: Replace with real API request
+      // ✅ Simulated API login
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      if (formData.email === "test@example.com" && formData.password === "123456") {
+      if (
+        formData.email === "test@example.com" &&
+        formData.password === "123456"
+      ) {
         localStorage.setItem("authToken", "sample_token");
-        window.location.href = "/dashboard"; 
+        window.location.href = "/dashboard";
       } else {
         setLoginError("Invalid email or password");
       }
@@ -60,6 +66,24 @@ function LoginForm({ onSwitch, onForgotPassword }) {
     }
   };
 
+  // ✅ Fake Google login
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setLoginError("");
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // ✅ Pretend success
+      localStorage.setItem("authToken", "google_sample_token");
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setLoginError("Google login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -74,7 +98,7 @@ function LoginForm({ onSwitch, onForgotPassword }) {
           <img
             src="/logo.png"
             alt="Logo"
-            className="w-16 h-16 p-0  rounded-2xl shadow-lg object-contain"
+            className="w-16 h-16 p-0 rounded-2xl shadow-lg object-contain"
           />
         </div>
         <h2 className="text-3xl font-bold bg-gradient-to-r from-brand to-purple-600 bg-clip-text text-transparent">
@@ -112,14 +136,14 @@ function LoginForm({ onSwitch, onForgotPassword }) {
               onClick={() => setShowPassword(!showPassword)}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           }
         />
+
+        {loginError && (
+          <p className="text-sm text-red-600 dark:text-red-400">{loginError}</p>
+        )}
 
         <div className="flex items-center justify-between">
           <label className="flex items-center">
@@ -149,6 +173,7 @@ function LoginForm({ onSwitch, onForgotPassword }) {
           Sign In
         </Button>
 
+        {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300 dark:border-gray-600" />
@@ -159,6 +184,19 @@ function LoginForm({ onSwitch, onForgotPassword }) {
             </span>
           </div>
         </div>
+
+        {/* Google Login Button */}
+        <motion.button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm hover:shadow-md px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all disabled:opacity-50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <FcGoogle className="w-5 h-5" />
+          Continue with Google
+        </motion.button>
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           Don't have an account?{" "}

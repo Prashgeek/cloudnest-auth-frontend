@@ -149,7 +149,7 @@ export default function AuthPage() {
       {/* Footer */}
       <footer className="relative z-10 text-center py-6 px-6 border-t border-gray-200/50 dark:border-gray-700/50 bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          © 2025 Cloudnest. Secure cloud storage for everyone.
+          Â© 2025 Cloudnest. Secure cloud storage for everyone.
         </p>
         <div className="flex justify-center gap-6 mt-2">
           <a
