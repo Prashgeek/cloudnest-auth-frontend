@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './components/Dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
