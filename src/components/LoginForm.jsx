@@ -1,216 +1,185 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
-import { FcGoogle } from "react-icons/fc"; // ✅ Google icon
-import InputField from "./InputField";
-import Button from "./Button";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa";
 
-function LoginForm({ onSwitch, onForgotPassword }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState("");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = () => {
+    const err = {};
+    if (!form.email) err.email = "Email is required";
+    if (!form.password) err.password = "Password is required";
+    setErrors(err);
+    return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const handleLogin = async () => {
+    if (!validate()) return;
     setLoading(true);
-    setLoginError("");
-
-    try {
-      // ✅ Simulated API login
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      if (
-        formData.email === "test@example.com" &&
-        formData.password === "123456"
-      ) {
-        localStorage.setItem("authToken", "sample_token");
+    await new Promise((r) => setTimeout(r, 1500));
+    if (form.email === "test@example.com" && form.password === "123456") {
+      localStorage.setItem("authToken", "token");
+      showToast("Login successful!");
+      setLoading(false);
+      setTimeout(() => {
         window.location.href = "/dashboard";
-      } else {
-        setLoginError("Invalid email or password");
-      }
-    } catch (err) {
-      setLoginError("Something went wrong. Please try again.");
-    } finally {
+      }, 1500);
+    } else {
+      setLoginError("Invalid email or password");
       setLoading(false);
     }
   };
 
-  // ✅ Fake Google login
-  const handleGoogleLogin = async () => {
+  const handleGoogle = async () => {
     setLoading(true);
-    setLoginError("");
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // ✅ Pretend success
-      localStorage.setItem("authToken", "google_sample_token");
+    await new Promise((r) => setTimeout(r, 1500));
+    localStorage.setItem("authToken", "google_token");
+    showToast("Login successful!");
+    setLoading(false);
+    setTimeout(() => {
       window.location.href = "/dashboard";
-    } catch (err) {
-      setLoginError("Google login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    }, 1500);
+  };
+
+  const handleApple = async () => {
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 1500));
+    localStorage.setItem("authToken", "apple_token");
+    showToast("Login successful!");
+    setLoading(false);
+    setTimeout(() => {
+      window.location.href = "/dashboard";
+    }, 1500);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Logo at top */}
-      <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="w-16 h-16 p-0 rounded-2xl shadow-lg object-contain"
-          />
+    <div className="flex flex-col items-center w-full">
+      {/* Show error toast if any */}
+      {loginError && (
+        <p className="text-sm text-red-600 text-center mb-2">{loginError}</p>
+      )}
+
+      {/* Login Form Content */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col gap-4 w-full items-center p-8"
+        style={{
+          backgroundColor: "transparent", // hides background
+          boxShadow: "none", // removes shadow
+          border: "none", // removes border
+        }}
+      >
+        {/* Logo and Title */}
+        <div className="flex flex-col items-center mb-4">
+          <img src="/logo.png" alt="Logo" className="w-12 h-12 mb-2" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-1 text-center">
+            Log In
+          </h2>
+          <p className="text-gray-500 text-xs text-center">
+            Welcome back! Please log in to your account.
+          </p>
         </div>
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-brand to-purple-600 bg-clip-text text-transparent">
-          Welcome Back
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Sign in to your account to continue
-        </p>
-      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <InputField
-          icon={<Mail className="w-5 h-5" />}
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleInputChange}
-          error={errors.email}
-          label="Email Address"
-        />
+        {/* Email Field */}
+        <div className="w-11/12 sm:w-4/5 mx-auto">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm"
+          />
+          {errors.email && (
+            <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+          )}
+        </div>
 
-        <InputField
-          icon={<Lock className="w-5 h-5" />}
-          type={showPassword ? "text" : "password"}
-          name="password"
-          placeholder="Enter your password"
-          value={formData.password}
-          onChange={handleInputChange}
-          error={errors.password}
-          label="Password"
-          rightIcon={
+        {/* Password Field */}
+        <div className="w-11/12 sm:w-4/5 mx-auto">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <div className="relative w-full">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter your password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm"
+            />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute inset-y-0 right-2 flex items-center text-gray-400"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
-          }
-        />
-
-        {loginError && (
-          <p className="text-sm text-red-600 dark:text-red-400">{loginError}</p>
-        )}
-
-        <div className="flex items-center justify-between">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              className="w-4 h-4 text-brand border-gray-300 rounded focus:ring-brand focus:ring-2"
-            />
-            <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-              Remember me
-            </span>
-          </label>
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className="text-sm text-brand hover:text-purple-600 font-medium transition-colors"
-          >
-            Forgot password?
-          </button>
+          </div>
+          {errors.password && (
+            <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+          )}
         </div>
 
-        <Button
-          type="submit"
-          loading={loading}
-          className="w-full"
-          rightIcon={<ArrowRight className="w-5 h-5" />}
+        {/* Login Button */}
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-11/12 sm:w-4/5 py-2.5 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-1 text-sm font-medium mt-6"
         >
-          Sign In
-        </Button>
+          {loading ? "Logging in..." : "Log In"}
+                  </button>
 
         {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">
-              or
-            </span>
-          </div>
+        <div className="flex items-center my-4 text-gray-300 gap-2 w-11/12 sm:w-4/5 mx-auto">
+          <hr className="flex-grow border-gray-300" />
+          <span className="text-xs text-gray-400 text-center">Or Login with</span>
+          <hr className="flex-grow border-gray-300" />
         </div>
 
-        {/* Google Login Button */}
-        <motion.button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm hover:shadow-md px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 transition-all disabled:opacity-50"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <FcGoogle className="w-5 h-5" />
-          Continue with Google
-        </motion.button>
-
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{" "}
-          <button
-            type="button"
-            onClick={onSwitch}
-            className="font-semibold text-brand hover:text-purple-600 transition-colors"
+        {/* Social Buttons */}
+        <div className="flex justify-center gap-4 w-full max-w-md mx-auto px-4">
+          <motion.button
+            onClick={handleGoogle}
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center justify-center w-20 h-10 bg-white border rounded-lg shadow hover:bg-gray-50"
           >
-            Create one now
+            <FcGoogle className="w-6 h-6" />
+          </motion.button>
+          <motion.button
+            onClick={handleApple}
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center justify-center w-20 h-10 bg-white border rounded-lg shadow hover:bg-gray-50"
+          >
+            <FaApple className="w-6 h-6 text-black" />
+          </motion.button>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-gray-600 text-xs mt-4 w-11/12 sm:w-4/5 mx-auto">
+          Don’t have an account?{" "}
+          <button onClick={onSwitch} className="text-blue-600 hover:underline">
+            Sign Up
           </button>
         </p>
-      </form>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
-
-export default LoginForm;
