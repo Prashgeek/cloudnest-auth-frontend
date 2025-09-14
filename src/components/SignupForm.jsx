@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
-import InputField from "./InputField";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa";
 import Button from "./Button";
+import InputField from "./InputField";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 
-function SignupForm({ onSwitch }) {
+export default function SignupForm({ onSwitch, showToast }) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -20,46 +22,42 @@ function SignupForm({ onSwitch }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.fullName) {
-      newErrors.fullName = "Full name is required";
-    } else if (formData.fullName.length < 2) {
-      newErrors.fullName = "Name must be at least 2 characters";
-    }
+    // Full Name: at least 2 letters, only alphabets and spaces
+    const nameRegex = /^[a-zA-Z\s]{2,}$/;
+    if (!formData.fullName) newErrors.fullName = "Full name is required";
+    else if (!nameRegex.test(formData.fullName))
+      newErrors.fullName =
+        "Name must be at least 2 characters and contain only letters";
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
+    // Email: stricter validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+    if (!formData.email) newErrors.email = "Email is required";
+    else if (!emailRegex.test(formData.email))
+      newErrors.email = "Please enter a valid email with proper domain";
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
+    // Password: at least 8 chars, uppercase, lowercase, number, special char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (!passwordRegex.test(formData.password))
+      newErrors.password =
+        "Password must be 8+ chars, include uppercase, lowercase, number & symbol";
 
-    if (!formData.confirmPassword) {
+    // Confirm Password
+    if (!formData.confirmPassword)
       newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
+    else if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-    }
 
-    if (!acceptTerms) {
+    // Terms
+    if (!acceptTerms)
       newErrors.terms = "Please accept the terms and conditions";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,159 +68,183 @@ function SignupForm({ onSwitch }) {
     if (!validateForm()) return;
 
     setLoading(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setLoading(false);
+
+    showToast("Registration successful!");
+    setTimeout(() => onSwitch(), 1500);
+  };
+
+  const handleGoogleSignup = async () => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setLoading(false);
+    localStorage.setItem("authToken", "google_token");
+    showToast("Login successful!");
+    setTimeout(() => (window.location.href = "/dashboard"), 1500);
+  };
+
+  const handleAppleSignup = async () => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setLoading(false);
+    localStorage.setItem("authToken", "apple_token");
+    showToast("Login successful!");
+    setTimeout(() => (window.location.href = "/dashboard"), 1500);
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
+      className="flex flex-col gap-4 w-full items-center p-8"
+      style={{
+        backgroundColor: "#EAF7FC",
+        boxShadow: "none",
+        border: "none",
+        borderRadius: "1rem",
+      }}
     >
-      <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="bg-gradient-to-r from-brand to-purple-600 p-3 rounded-2xl">
-            <UserPlus className="w-8 h-8 text-white" />
-          </div>
-        </div>
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-brand to-purple-600 bg-clip-text text-transparent">
-          Create Account
+      {/* Logo and Title */}
+      <div className="flex flex-col items-center mb-4">
+        <img src="/logo.png" alt="Logo" className="w-12 h-12 mb-2" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-1 text-center">
+          Sign Up
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Join Cloudnest and start your journey
+        <p className="text-gray-500 text-xs text-center">
+          Create your account to get started.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 w-11/12 sm:w-4/5 mx-auto"
+      >
         <InputField
           icon={<User className="w-5 h-5" />}
+          label="Full Name"
           type="text"
           name="fullName"
           placeholder="Enter your full name"
           value={formData.fullName}
           onChange={handleInputChange}
           error={errors.fullName}
-          label="Full Name"
         />
-
         <InputField
           icon={<Mail className="w-5 h-5" />}
+          label="Email Address"
           type="email"
           name="email"
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleInputChange}
           error={errors.email}
-          label="Email Address"
         />
-
-        <div className="space-y-2">
-          <InputField
-            icon={<Lock className="w-5 h-5" />}
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Create a password"
-            value={formData.password}
-            onChange={handleInputChange}
-            error={errors.password}
-            label="Password"
-            rightIcon={
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            }
-          />
-          <PasswordStrengthIndicator password={formData.password} />
-        </div>
-
         <InputField
           icon={<Lock className="w-5 h-5" />}
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          name="password"
+          placeholder="Create a password"
+          value={formData.password}
+          onChange={handleInputChange}
+          error={errors.password}
+          rightIcon={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          }
+        />
+        <PasswordStrengthIndicator password={formData.password} />
+        <InputField
+          icon={<Lock className="w-5 h-5" />}
+          label="Confirm Password"
           type={showConfirmPassword ? "text" : "password"}
           name="confirmPassword"
           placeholder="Confirm your password"
           value={formData.confirmPassword}
           onChange={handleInputChange}
           error={errors.confirmPassword}
-          label="Confirm Password"
           rightIcon={
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-gray-600 hover:text-gray-800"
             >
               {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           }
         />
 
-        <div className="space-y-4">
-          <label className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-              className="w-4 h-4 text-brand border-gray-300 rounded focus:ring-brand focus:ring-2 mt-0.5"
-            />
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              I agree to the{" "}
-              <button
-                type="button"
-                className="text-brand hover:text-purple-600 font-medium underline"
-              >
-                Terms of Service
-              </button>{" "}
-              and{" "}
-              <button
-                type="button"
-                className="text-brand hover:text-purple-600 font-medium underline"
-              >
-                Privacy Policy
-              </button>
-            </span>
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2"
+          />
+          <label htmlFor="terms" className="text-sm text-gray-700">
+            I agree to the{" "}
+            <a href="#terms" className="text-blue-600 hover:underline">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#privacy" className="text-blue-600 hover:underline">
+              Privacy Policy
+            </a>
           </label>
-          {errors.terms && (
-            <p className="text-red-500 text-sm">{errors.terms}</p>
-          )}
         </div>
+        {errors.terms && <p className="text-red-600 text-sm">{errors.terms}</p>}
 
         <Button
           type="submit"
           loading={loading}
-          className="w-full"
-          rightIcon={<ArrowRight className="w-5 h-5" />}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg flex justify-center items-center gap-2"
         >
-          Create Account
+          Sign Up
         </Button>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">or</span>
-          </div>
-        </div>
-
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={onSwitch}
-            className="font-semibold text-brand hover:text-purple-600 transition-colors"
-          >
-            Sign in here
-          </button>
-        </p>
       </form>
+
+      <div className="flex items-center my-4 text-gray-300 gap-2 w-11/12 sm:w-4/5 mx-auto">
+        <hr className="flex-grow border-gray-300" />
+        <span className="text-xs text-gray-400 text-center">Or Register with</span>
+        <hr className="flex-grow border-gray-300" />
+      </div>
+
+      <div className="flex justify-center gap-4 w-full max-w-md mx-auto px-4">
+        <motion.button
+          onClick={handleGoogleSignup}
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center justify-center w-20 h-10 bg-white border rounded-lg shadow hover:bg-gray-50"
+        >
+          <FcGoogle className="w-6 h-6" />
+        </motion.button>
+        <motion.button
+          onClick={handleAppleSignup}
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center justify-center w-20 h-10 bg-white border rounded-lg shadow hover:bg-gray-50"
+        >
+          <FaApple className="w-6 h-6 text-black" />
+        </motion.button>
+      </div>
+
+      <p className="mt-4 text-center text-gray-600 text-xs w-11/12 sm:w-4/5 mx-auto">
+        Already have an account?{" "}
+        <button
+          onClick={onSwitch}
+          className="text-blue-600 hover:underline font-semibold"
+          type="button"
+        >
+          Log in here
+        </button>
+      </p>
     </motion.div>
   );
 }
-
-export default SignupForm;
