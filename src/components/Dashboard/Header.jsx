@@ -28,23 +28,28 @@ export default function Header() {
         <Stack direction="row" spacing={2}>
           <Avatar sx={{ bgcolor: deepOrange }}>S</Avatar>
         </Stack>
-        <Button
-          variant="outlined"
-          onClick={handleLogout} // Added onClick handler
-          sx={{ 
-            textTransform: "none",
-            borderRadius: "20px", // Added border radius as requested
-            color: "#000000", // Added black text color
-            borderColor: "#9CA3AF", // Added grey border color
-            backgroundColor: "#F9FAFB", // Added light grey background
-            "&:hover": {
-              backgroundColor: "#F3F4F6", // Added hover background
-              borderColor: "#6B7280" // Added hover border color
-            }
-          }}
-        >
-          Logout
-        </Button>
+       <Button
+  variant="contained"
+  onClick={handleLogout}
+  sx={{
+    textTransform: "none",
+    fontWeight: "bold", // ✅ bold text
+    borderRadius: "12px", // ✅ smooth rectangular corners
+    backgroundColor: "#d9d9d9",
+    color: "#000000",
+    boxShadow: "none",
+    px: 1.9, // ✅ slightly less padding to reduce width
+    py: 1,
+    minWidth: "unset", // ✅ prevents default wide button
+    "&:hover": {
+      backgroundColor: "#bfbfbf",
+      boxShadow: "none",
+    },
+  }}
+>
+  Log Out
+</Button>
+
       </div>
     </header>
   );
