@@ -19,80 +19,82 @@ export default function SignupForm({ onSwitch, showToast }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [acceptTerms, setAcceptTerms] = useState(false);
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-
+  
   const validateForm = () => {
     const newErrors = {};
-
     // Full Name: at least 2 letters, only alphabets and spaces
     const nameRegex = /^[a-zA-Z\s]{2,}$/;
     if (!formData.fullName) newErrors.fullName = "Full name is required";
     else if (!nameRegex.test(formData.fullName))
       newErrors.fullName =
         "Name must be at least 2 characters and contain only letters";
-
     // Email: stricter validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
     if (!formData.email) newErrors.email = "Email is required";
     else if (!emailRegex.test(formData.email))
       newErrors.email = "Please enter a valid email with proper domain";
-
     // Password: at least 8 chars, uppercase, lowercase, number, special char
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!formData.password) newErrors.password = "Password is required";
     else if (!passwordRegex.test(formData.password))
       newErrors.password =
         "Password must be 8+ chars, include uppercase, lowercase, number & symbol";
-
     // Confirm Password
     if (!formData.confirmPassword)
       newErrors.confirmPassword = "Please confirm your password";
     else if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-
     // Terms
     if (!acceptTerms)
       newErrors.terms = "Please accept the terms and conditions";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
+    
+    // Store user data in localStorage
+    localStorage.setItem("authToken", "signup_token"); // Added auth token storage
+    localStorage.setItem("userName", formData.fullName); // Added username storage
+    localStorage.setItem("userEmail", formData.email); // Added email storage
+    
     setLoading(false);
-
     showToast("Registration successful!");
     setTimeout(() => onSwitch(), 1500);
   };
-
+  
   const handleGoogleSignup = async () => {
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setLoading(false);
     localStorage.setItem("authToken", "google_token");
+    localStorage.setItem("userName", "Google User"); // Added username storage
+    localStorage.setItem("userEmail", "user@gmail.com"); // Added email storage
     showToast("Login successful!");
     setTimeout(() => (window.location.href = "/dashboard"), 1500);
   };
-
+  
   const handleAppleSignup = async () => {
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setLoading(false);
     localStorage.setItem("authToken", "apple_token");
+    localStorage.setItem("userName", "Apple User"); // Added username storage
+    localStorage.setItem("userEmail", "user@icloud.com"); // Added email storage
     showToast("Login successful!");
     setTimeout(() => (window.location.href = "/dashboard"), 1500);
   };
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -117,7 +119,6 @@ export default function SignupForm({ onSwitch, showToast }) {
           Create your account to get started.
         </p>
       </div>
-
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 w-11/12 sm:w-4/5 mx-auto"
@@ -181,7 +182,6 @@ export default function SignupForm({ onSwitch, showToast }) {
             </button>
           }
         />
-
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -202,7 +202,6 @@ export default function SignupForm({ onSwitch, showToast }) {
           </label>
         </div>
         {errors.terms && <p className="text-red-600 text-sm">{errors.terms}</p>}
-
         <Button
           type="submit"
           loading={loading}
@@ -211,13 +210,11 @@ export default function SignupForm({ onSwitch, showToast }) {
           Sign Up
         </Button>
       </form>
-
       <div className="flex items-center my-4 text-gray-300 gap-2 w-11/12 sm:w-4/5 mx-auto">
         <hr className="flex-grow border-gray-300" />
         <span className="text-xs text-gray-400 text-center">Or Register with</span>
         <hr className="flex-grow border-gray-300" />
       </div>
-
       <div className="flex justify-center gap-4 w-full max-w-md mx-auto px-4">
         <motion.button
           onClick={handleGoogleSignup}
@@ -234,7 +231,6 @@ export default function SignupForm({ onSwitch, showToast }) {
           <FaApple className="w-6 h-6 text-black" />
         </motion.button>
       </div>
-
       <p className="mt-4 text-center text-gray-600 text-xs w-11/12 sm:w-4/5 mx-auto">
         Already have an account?{" "}
         <button

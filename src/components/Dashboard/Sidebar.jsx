@@ -21,7 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const drawerWidth = 240;
 
-export default function ClippedDrawer() {
+export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) { // Added props for active menu
   const menuItems = [
     { text: "Home", icon: <HomeIcon /> },
     { text: "Downloads", icon: <DownloadIcon /> },
@@ -30,10 +30,15 @@ export default function ClippedDrawer() {
     { text: "Trash", icon: <DeleteIcon /> },
   ];
 
+  const handleMenuClick = (menuText) => { // Added click handler
+    if (onMenuChange) {
+      onMenuChange(menuText);
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", borderRight: "1px solid #d1d5db", backgroundColor: "#eff6ff" }} >
       <CssBaseline />
-
       {/* ✅ Sidebar Drawer */}
       <Drawer
         variant="permanent"
@@ -47,7 +52,6 @@ export default function ClippedDrawer() {
             backgroundColor: "#eff6ff",
             position: "relative",   // ✅ stops overlapping footer
             height: "100%",
-            
           },
         }}
       >
@@ -65,17 +69,54 @@ export default function ClippedDrawer() {
             style={{ width: "78px", height: "auto" }}
           />
         </Box>
-
         <Box sx={{ overflow: "auto" }}>
           <List sx={{ display: "flex", flexDirection: "column", gap: 4.5 }}>
-            {menuItems.map((item, index) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+            {menuItems.map((item, index) => {
+              const isActive = activeMenu === item.text; // Added active state check
+              
+              return (
+                <ListItem key={item.text} disablePadding>
+                  <ListItemButton
+                    onClick={() => handleMenuClick(item.text)} // Added click handler
+                    sx={{
+                      opacity: isActive ? 1 : 0.7, // Added opacity for inactive items
+                      backgroundColor: isActive ? "#dbeafe" : "transparent", // Added blue background for active
+                      borderRadius: "8px", // Added border radius
+                      margin: "0 8px", // Added margin
+                      transition: "all 0.2s ease-in-out", // Added smooth transition
+                      borderLeft: isActive ? "4px solid #2563eb" : "4px solid transparent", // Added left border for active
+                      "&:hover": {
+                        backgroundColor: isActive ? "#bfdbfe" : "#f3f4f6", // Added hover effects
+                        opacity: 1, // Full opacity on hover
+                        transform: "translateX(4px)" // Added slight movement on hover
+                      },
+                      "&:active": {
+                        transform: "scale(0.98)" // Added press effect
+                      }
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        color: isActive ? "#2563eb" : "#6b7280", // Added active icon color
+                        transition: "color 0.2s ease" // Added color transition
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.text}
+                      sx={{
+                        "& .MuiListItemText-primary": {
+                          fontWeight: isActive ? "600" : "500", // Added font weight for active
+                          color: isActive ? "#2563eb" : "#374151", // Added text color for active
+                          transition: "all 0.2s ease" // Added text transition
+                        }
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
           </List>
         </Box>
       </Drawer>
