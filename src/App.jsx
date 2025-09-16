@@ -5,6 +5,7 @@ import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Settings from './pages/Settings';
 
 export default function App() {
   return (
@@ -37,7 +38,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route path='/settings' element={<Settings/>}/>
         {/* Redirect any unknown routes to landing page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
