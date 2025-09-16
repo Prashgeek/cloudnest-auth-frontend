@@ -15,22 +15,24 @@ import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
 export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
   const menuItems = [
-    { text: "Home", icon: <HomeIcon /> },
-    { text: "Downloads", icon: <DownloadIcon /> },
-    { text: "Files", icon: <InsertDriveFileIcon /> },
-    { text: "Settings", icon: <SettingsIcon /> },
-    { text: "Trash", icon: <DeleteIcon /> },
+    { text: "Home", icon: <HomeIcon />, link: '/'},
+    { text: "Downloads", icon: <DownloadIcon />, link: '/' },
+    { text: "Files", icon: <InsertDriveFileIcon />, link: '/' },
+    { text: "Settings", icon: <SettingsIcon />, link: '/settings' },
+    { text: "Trash", icon: <DeleteIcon />, link: '/' },
   ];
 
-  const handleMenuClick = (menuText) => {
+  const handleMenuClick = (menuText) => { // Added click handler
     if (onMenuChange) {
       onMenuChange(menuText);
     }
+    navigate(link);
   };
 
   return (
@@ -64,7 +66,7 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
-                    onClick={() => handleMenuClick(item.text)}
+                    onClick={() => handleMenuClick(item.text)} // Added click handler
                     sx={{
                       opacity: isActive ? 1 : 0.5,
                       transition: "opacity 0.2s ease-in-out",
