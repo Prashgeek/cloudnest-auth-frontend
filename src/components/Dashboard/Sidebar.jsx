@@ -32,11 +32,11 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) { /
   ];
 
   const navigate = useNavigate()
-  const handleMenuClick = (menuText, link) => { // Added click handler
+  const handleMenuClick = (menuText, link) => {
     if (onMenuChange) {
       onMenuChange(menuText);
-      navigate(link)
     }
+    navigate(link);
   };
 
   return (
@@ -80,7 +80,7 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) { /
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
-                    onClick={() => handleMenuClick(item.text, item.link)} // Added click handler
+                    onClick={() => handleMenuClick(item.text, item.link)}
                     sx={{
                       opacity: isActive ? 1 : 0.7, // Added opacity for inactive items
                       backgroundColor: isActive ? "#dbeafe" : "transparent", // Added blue background for active
