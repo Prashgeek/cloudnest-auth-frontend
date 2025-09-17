@@ -8,27 +8,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
   return (
-    <div className="min-h-dvh bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-gray-100">
-      <Toaster richColors closeButton />
-      
+    <>
       <Routes>
-        {/* Landing page as default route */}
         <Route path="/" element={<LandingPage />} />
-
-        {/* Auth routes */}
         <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/reset-password"
-          element={
-            <ResetPasswordForm
-              token={new URLSearchParams(window.location.search).get('token')}
-              onBack={() => window.history.back()}
-              onSuccess={() => (window.location.href = '/auth')}
-            />
-          }
-        />
-
-        {/* Protected dashboard route */}
+        <Route path="/reset-password" element={<ResetPasswordForm />} />
         <Route
           path="/dashboard"
           element={
@@ -37,10 +21,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Redirect any unknown routes to landing page */}
+        {/* Removed ShareFile route - now integrated into Dashboard */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+      <Toaster position="top-right" richColors />
+    </>
   );
-}
+}  
