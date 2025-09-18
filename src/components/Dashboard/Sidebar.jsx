@@ -7,31 +7,33 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-
-//  MUI Icons
+// MUI Icons
 import HomeIcon from "@mui/icons-material/Home";
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
 export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
+  const navigate = useNavigate();
+  const location = useLocation(); // For active menu highlight
+
+  // Updated links to use nested /dashboard routes
   const menuItems = [
-    { text: "Home", icon: <HomeIcon />, link: '/'},
-    { text: "Downloads", icon: <DownloadIcon />, link: '/' },
-    { text: "Files", icon: <InsertDriveFileIcon />, link: '/' },
-    { text: "Settings", icon: <SettingsIcon />, link: '/settings' },
-    { text: "Trash", icon: <DeleteIcon />, link: '/' },
+    { text: "Home", icon: <HomeIcon /> },
+    { text: "Downloads", icon: <DownloadIcon /> },
+    { text: "Files", icon: <InsertDriveFileIcon /> },
+    { text: "Settings", icon: <SettingsIcon /> },
+    { text: "Trash", icon: <DeleteIcon /> },
   ];
 
-  const handleMenuClick = (menuText) => { // Added click handler
+  const handleMenuClick = (menuText) => {
     if (onMenuChange) {
-      onMenuChange(menuText);
+      onMenuChange(item.text);
     }
-    navigate(link);
   };
 
   return (
@@ -52,20 +54,40 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
           },
         }}
       >
-        {/*  Logo */}
+        {/* Logo */}
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 2 }}>
-          <img src="/logo.png" alt="Cloudnest Logo" style={{ width: "78px", height: "auto" }} />
+          <img
+            src="/logo.png"
+            alt="Cloudnest Logo"
+            style={{ width: "78px", height: "auto" }}
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "block";
+            }}
+          />
+          <Box
+            sx={{
+              display: "none",
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              color: "#2563eb",
+            }}
+          >
+            CloudNest
+          </Box>
         </Box>
 
-        {/*  Menu List */}
+        {/* Menu List */}
         <Box sx={{ overflow: "auto" }}>
           <List sx={{ display: "flex", flexDirection: "column", gap: 4.5 }}>
             {menuItems.map((item) => {
-              const isActive = activeMenu === item.text;
+              // Highlight based on current path
+              const isActive = location.pathname === item.link;
+
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
-                    onClick={() => handleMenuClick(item.text)} // Added click handler
+                    onClick={() => handleMenuClick(item.text)}
                     sx={{
                       opacity: isActive ? 1 : 0.5,
                       transition: "opacity 0.2s ease-in-out",
@@ -81,7 +103,7 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
                   >
                     <ListItemIcon
                       sx={{
-                        color: isActive ? "#000000" : "#6b7280", //  black icon if active
+                        color: isActive ? "#000000" : "#6b7280",
                         transition: "color 0.2s ease",
                       }}
                     >
@@ -91,8 +113,8 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
                       primary={item.text}
                       sx={{
                         "& .MuiListItemText-primary": {
-                          fontWeight: isActive ? "700" : "400", //  bold text if active
-                          color: "#000000", //  always black text (even if active)
+                          fontWeight: isActive ? "700" : "400",
+                          color: "#000000",
                           transition: "all 0.2s ease",
                         },
                       }}

@@ -4,29 +4,26 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import Dashboard from './pages/Dashboard';
+import DashboardHome from './pages/DashboardHome';
 import ProtectedRoute from './components/ProtectedRoute';
 import Settings from './pages/Settings';
 
 export default function App() {
   return (
-    <div className="min-h-dvh bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-gray-100">
-      <Toaster richColors closeButton />
-      
+    <>
       <Routes>
-        {/* Landing page as default route */}
+        {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
-
-        {/* Auth routes */}
         <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/reset-password"
+        <Route 
+          path="/reset-password" 
           element={
             <ResetPasswordForm
               token={new URLSearchParams(window.location.search).get('token')}
               onBack={() => window.history.back()}
               onSuccess={() => (window.location.href = '/auth')}
             />
-          }
+          } 
         />
 
         {/* Protected dashboard route */}
@@ -38,10 +35,11 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path='/settings' element={<Settings/>}/>
+
         {/* Redirect any unknown routes to landing page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+      <Toaster position="top-right" richColors />
+    </>
   );
 }
