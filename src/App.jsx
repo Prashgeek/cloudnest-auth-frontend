@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardHome from './pages/DashboardHome';
 import ProtectedRoute from './components/ProtectedRoute';
 import Settings from './pages/Settings';
+import ViewStorage from './pages/ViewStorage';
 
 export default function App() {
   return (
@@ -15,28 +16,30 @@ export default function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route 
-          path="/reset-password" 
+        <Route
+          path="/reset-password"
           element={
             <ResetPasswordForm
               token={new URLSearchParams(window.location.search).get('token')}
               onBack={() => window.history.back()}
               onSuccess={() => (window.location.href = '/auth')}
             />
-          } 
-        />
-
-        {/* Protected dashboard route */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
           }
         />
 
-        {/* Redirect any unknown routes to landing page */}
+        {/* Protected dashboard with nested routes */}
+        <Route path="/dashboard/*" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }>
+          <Route index element={<DashboardHome />} />      {/* Default dashboard content */}
+          <Route path="settings" element={<Settings />}>
+            <Route path="view-storage" element={<ViewStorage />} />
+          </Route>
+        </Route>
+
+        {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster position="top-right" richColors />

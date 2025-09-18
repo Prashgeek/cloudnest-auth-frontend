@@ -23,17 +23,18 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
 
   // Updated links to use nested /dashboard routes
   const menuItems = [
-    { text: "Home", icon: <HomeIcon /> },
-    { text: "Downloads", icon: <DownloadIcon /> },
-    { text: "Files", icon: <InsertDriveFileIcon /> },
-    { text: "Settings", icon: <SettingsIcon /> },
-    { text: "Trash", icon: <DeleteIcon /> },
+    { text: "Home", icon: <HomeIcon />, link: "/dashboard" },
+    { text: "Downloads", icon: <DownloadIcon />, link: "/dashboard/downloads" },
+    { text: "Files", icon: <InsertDriveFileIcon />, link: "/dashboard/files" },
+    { text: "Settings", icon: <SettingsIcon />, link: "/dashboard/settings" },
+    { text: "Trash", icon: <DeleteIcon />, link: "/dashboard/trash" },
   ];
 
-  const handleMenuClick = (menuText) => {
+  const handleMenuClick = (item) => {
     if (onMenuChange) {
       onMenuChange(item.text);
     }
+    navigate(item.link); // Navigate to nested dashboard route
   };
 
   return (
@@ -87,7 +88,7 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
-                    onClick={() => handleMenuClick(item.text)}
+                    onClick={() => handleMenuClick(item)}
                     sx={{
                       opacity: isActive ? 1 : 0.5,
                       transition: "opacity 0.2s ease-in-out",
