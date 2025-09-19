@@ -6,10 +6,17 @@ import NotificationSettings from "../components/Dashboard/Settings/NotifcationSe
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 function Settings() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // If we are inside /dashboard/settings/view-storage, only show the outlet
+  if (location.pathname.includes("view-storage")) {
+    return <Outlet />;
+  }
+
 
   return (
     <section className="p-6 flex-1">
@@ -53,6 +60,8 @@ function Settings() {
           Logout
         </button>
       </div>
+      {/* Nested route outlet goes here */}
+      <Outlet />
     </section>
   );
 }

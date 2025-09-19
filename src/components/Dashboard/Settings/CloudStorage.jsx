@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 function CloudStorage() {
   const [userStorage, setUserStorage] = useState(5); // Example: 5 GB used
   const totalStorage = 20;
   const [hoveredSegment, setHoveredSegment] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const storedUserStorage = localStorage.getItem("userStorage");
@@ -120,7 +122,9 @@ function CloudStorage() {
             </div>
             
             {/* Action button */}
-            <button className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 self-start group">
+            <button 
+            onClick={() => navigate('view-storage')}
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 self-start group">
               View Details
               <svg 
                 className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform duration-200" 

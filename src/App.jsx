@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardHome from './pages/DashboardHome';
 import ProtectedRoute from './components/ProtectedRoute';
 import Settings from './pages/Settings';
+import ViewStorage from './pages/ViewStorage';
 
 export default function App() {
   return (
@@ -15,15 +16,15 @@ export default function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route 
-          path="/reset-password" 
+        <Route
+          path="/reset-password"
           element={
             <ResetPasswordForm
               token={new URLSearchParams(window.location.search).get('token')}
               onBack={() => window.history.back()}
               onSuccess={() => (window.location.href = '/auth')}
             />
-          } 
+          }
         />
 
         {/* Protected dashboard with nested routes */}
@@ -33,7 +34,9 @@ export default function App() {
           </ProtectedRoute>
         }>
           <Route index element={<DashboardHome />} />      {/* Default dashboard content */}
-          <Route path="settings" element={<Settings />} /> {/* Settings page */}
+          <Route path="settings" element={<Settings />}>
+            <Route path="view-storage" element={<ViewStorage />} />
+          </Route>
         </Route>
 
         {/* Redirect any unknown routes */}
