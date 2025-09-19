@@ -1,3 +1,4 @@
+// src/pages/ShareFile.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ShareFileComponent from "../components/Dashboard/ShareFileComponent";
@@ -13,9 +14,23 @@ export default function ShareFile() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
+  // Save to localStorage helper
+  const pushToLocalRecentFiles = (fileObj) => {
+    try {
+      const existing = JSON.parse(localStorage.getItem('recentFiles') || '[]');
+      const updated = [fileObj, ...existing].slice(0, 10);
+      localStorage.setItem('recentFiles', JSON.stringify(updated));
+    } catch (err) {
+      console.error('Failed to write recentFiles to localStorage', err);
+    }
+  };
+
   // Handle file upload completion
   const handleFileUploaded = (uploadedFile) => {
     setUploadedFiles(prev => [...prev, uploadedFile]);
+
+    // also persist to localStorage so Dashboard can read it
+    pushToLocalRecentFiles(uploadedFile);
 
     // Add success notification
     const notification = {
@@ -63,10 +78,21 @@ export default function ShareFile() {
     }
   };
 
+  // Called when user clicks a menu item in this page's Sidebar
+  // we will both set local activeMenu and navigate back to /dashboard,
+  // passing the desired activeMenu in location.state so Dashboard can pick it up.
+  const handleMenuChange = (menuText) => {
+    setActiveMenu(menuText);
+
+    // Always navigate back to the main dashboard route, but include which menu
+    // the dashboard should open via location.state
+    navigate('/dashboard', { state: { activeMenu: menuText } });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+      {/* Sidebar - pass onMenuChange, not setActiveMenu */}
+      <Sidebar activeMenu={activeMenu} onMenuChange={handleMenuChange} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -204,7 +230,7 @@ export default function ShareFile() {
                   )}
                 </div>
 
-                {/* Usage Statistics */}
+                {/* Usage Statistics (unchanged) */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Usage Statistics</h3>
 
@@ -225,7 +251,6 @@ export default function ShareFile() {
                       <span className="text-sm text-gray-600">Total Size</span>
                       <span className="font-medium text-gray-900">
                         {uploadedFiles.reduce((total, file) => {
-                          // Simple size calculation (this would be more sophisticated in real app)
                           const sizeMatch = file.size.match(/(\d+(?:\.\d+)?)\s*(\w+)/);
                           if (sizeMatch) {
                             const [, size, unit] = sizeMatch;
@@ -239,27 +264,27 @@ export default function ShareFile() {
                   </div>
                 </div>
 
-                {/* Quick Actions */}
+                {/* Quick Actions - navigate back to /dashboard but set desired menu via location.state */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
 
                   <div className="space-y-2">
                     <button
-                      onClick={() => navigate('/dashboard/files')}
+                      onClick={() => navigate('/dashboard', { state: { activeMenu: 'Files' } })}
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                     >
                       📁 View All Files
                     </button>
 
                     <button
-                      onClick={() => navigate('/dashboard/shared')}
+                      onClick={() => navigate('/dashboard', { state: { activeMenu: 'Home' } })}
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                     >
                       🔗 Manage Shared Links
                     </button>
 
                     <button
-                      onClick={() => navigate('/dashboard/settings')}
+                      onClick={() => navigate('/dashboard', { state: { activeMenu: 'Settings' } })}
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                     >
                       ⚙️ Upload Settings
@@ -276,4 +301,4 @@ export default function ShareFile() {
       </div>
     </div>
   ); 
-} 
+}

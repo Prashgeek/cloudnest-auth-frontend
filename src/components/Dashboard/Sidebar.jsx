@@ -17,7 +17,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
-export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
+export default function Sidebar({ activeMenu = "Home", onMenuChange }) {
   const navigate = useNavigate();
   const location = useLocation(); // For active menu highlight
 
@@ -46,7 +46,7 @@ export default function ClippedDrawer({ activeMenu = "Home", onMenuChange }) {
           width: drawerWidth,
           flexShrink: 0,
           height: "100vh",
-          [`& .MuiDrawer-paper`]: {
+          ["& .MuiDrawer-paper"]: {
             width: drawerWidth,
             boxSizing: "border-box",
             backgroundColor: "#eff6ff",

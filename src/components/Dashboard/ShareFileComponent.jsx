@@ -10,17 +10,15 @@ const validatePassword = (password) => {
     hasLowerCase: /[a-z]/.test(password),
     hasUpperCase: /[A-Z]/.test(password)
   };
-
   return {
     ...checks,
-    isValid: checks.minLength && checks.hasNumber && checks.hasSymbol && 
-             checks.hasLowerCase && checks.hasUpperCase
+    isValid: checks.minLength && checks.hasNumber && checks.hasSymbol &&
+      checks.hasLowerCase && checks.hasUpperCase
   };
 };
 
 export default function ShareFileComponent({ onFileUploaded }) {
   const fileInputRef = useRef(null);
-
   // ==== State management ====
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -39,20 +37,18 @@ export default function ShareFileComponent({ onFileUploaded }) {
   const handleFileSelect = useCallback((files) => {
     const fileArray = Array.from(files);
     // Filter out duplicates based on file name and size
-    const newFiles = fileArray.filter(newFile => 
-      !selectedFiles.some(existingFile => 
+    const newFiles = fileArray.filter(newFile =>
+      !selectedFiles.some(existingFile =>
         existingFile.name === newFile.name && existingFile.size === newFile.size
       )
     );
     setSelectedFiles(prev => [...prev, ...newFiles]);
   }, [selectedFiles]);
-
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(true);
   }, []);
-
   const handleDragLeave = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -61,7 +57,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
       setIsDragOver(false);
     }
   }, []);
-
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -71,7 +66,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
       handleFileSelect(files);
     }
   }, [handleFileSelect]);
-
   const handleFileInputChange = (e) => {
     if (e.target.files.length > 0) {
       handleFileSelect(e.target.files);
@@ -83,32 +77,25 @@ export default function ShareFileComponent({ onFileUploaded }) {
   const handlePasswordSave = async () => {
     const passwordValidation = validatePassword(password);
     const passwordsMatch = password === confirmPassword && password.length > 0;
-
     if (!passwordValidation.isValid || !passwordsMatch) {
       return;
     }
-
     setIsPasswordSaving(true);
-
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-
     setHasPassword(!!password);
     setIsPasswordSaving(false);
     setShowPasswordModal(false);
   };
-
   const handlePasswordRemove = () => {
     setPassword('');
     setConfirmPassword('');
     setHasPassword(false);
   };
-
   const handlePasswordKeyDown = (e) => {
     const passwordValidation = validatePassword(password);
     const passwordsMatch = password === confirmPassword && password.length > 0;
     const canSubmit = passwordValidation.isValid && passwordsMatch && !isPasswordSaving;
-
     if (e.key === 'Enter' && canSubmit) {
       handlePasswordSave();
     } else if (e.key === 'Escape') {
@@ -119,21 +106,17 @@ export default function ShareFileComponent({ onFileUploaded }) {
   // ==== Simulate Upload Process ====
   const simulateUpload = async () => {
     if (selectedFiles.length === 0) return;
-
     setUploadStatus('uploading');
     setUploadProgress(0);
-
     // Simulate upload progress
     for (let i = 0; i <= 100; i += 10) {
       await new Promise(resolve => setTimeout(resolve, 200));
       setUploadProgress(i);
     }
-
     // Mock generated share link
     const mockShareUrl = `https://cloudnest.com/share/${Date.now()}${hasPassword ? '?protected=true' : ''}`;
     setShareUrl(mockShareUrl);
     setUploadStatus('success');
-
     // Notify parent component
     selectedFiles.forEach(file => {
       const uploadedFile = {
@@ -147,7 +130,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
       };
       onFileUploaded && onFileUploaded(uploadedFile);
     });
-
     // Reset state after a delay
     setTimeout(() => {
       setSelectedFiles([]);
@@ -180,14 +162,13 @@ export default function ShareFileComponent({ onFileUploaded }) {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
-        {/* ==== Header (Title + top icon) ==== */}
+        {/* ==== Header (Title + icon in same line) ==== */}
         <div className="text-center mb-8">
-          <div className="flex flex-col items-center">
-            <UploadIcon className="w-12 h-12 text-blue-500 mb-[5px]" />
+          <div className="flex items-center justify-center gap-3">
+            <UploadIcon className="w-14 h-15 text-blue-500" />
             <h1 className="text-3xl font-bold text-gray-900">File Upload</h1>
           </div>
         </div>
-
         {/* ==== Upload Progress bar ==== */}
         {uploadStatus === 'uploading' && (
           <div className="mb-6 card p-6">
@@ -196,14 +177,13 @@ export default function ShareFileComponent({ onFileUploaded }) {
               <span className="font-medium">Uploading files... {uploadProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
           </div>
         )}
-
         {/* ==== Success message after upload ==== */}
         {uploadStatus === 'success' && (
           <div className="mb-6 card p-6 border-green-200 bg-green-50">
@@ -229,20 +209,19 @@ export default function ShareFileComponent({ onFileUploaded }) {
             </div>
           </div>
         )}
-
-        {/* ==== Drag & Drop Area (FIXED - keeping original colors) ==== */}
+        {/* ==== Drag & Drop Area ==== */}
         <div className="text-center mb-12">
           <div
             className={`rounded-[2rem] transition-all duration-300 cursor-pointer ${
-              isDragOver 
-                ? 'bg-blue-50 scale-[1.02]' 
+              isDragOver
+                ? 'bg-blue-50 scale-[1.02]'
                 : 'bg-gray-50 hover:bg-blue-50'
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            style={{ 
+            style={{
               height: '340px',
               display: 'flex',
               flexDirection: 'column',
@@ -258,18 +237,16 @@ export default function ShareFileComponent({ onFileUploaded }) {
                 style={{ width: '13.5rem', height: '13.5rem' }}
               />
             </div>
-
             <h2 className={`text-xl font-semibold mb-2 ${
               isDragOver ? 'text-blue-700' : 'text-gray-800'
             }`}>
-              {isDragOver 
-                ? 'Drop files here' 
-                : hasFiles 
-                ? `${selectedFiles.length} files selected` 
+              {isDragOver
+                ? 'Drop files here'
+                : hasFiles
+                ? `${selectedFiles.length} files selected`
                 : 'Drag and Drop file'
               }
             </h2>
-
             {hasFiles && !isDragOver && (
               <p className="text-gray-500 text-sm">
                 Click to add more files or use the buttons below
@@ -277,7 +254,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
             )}
           </div>
         </div>
-
         {/* ==== Main Action Buttons ==== */}
         <div className="flex justify-center items-center gap-40 mb-12">
           {/* Upload File button */}
@@ -299,7 +275,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
               accept="*/*"
             />
           </div>
-
           {/* Set Password button */}
           <div className="text-center">
             <button
@@ -319,7 +294,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
               {hasPassword ? 'Password Set ✓' : 'Set Password'}
             </span>
           </div>
-
           {/* Share button */}
           <div className="text-center">
             <button
@@ -342,7 +316,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
             </span>
           </div>
         </div>
-
         {/* Password Status Info */}
         {hasPassword && (
           <div className="text-center mb-6">
@@ -358,14 +331,12 @@ export default function ShareFileComponent({ onFileUploaded }) {
             </div>
           </div>
         )}
-
         {/* ==== Selected Files List ==== */}
         {selectedFiles.length > 0 && (
           <div className="card p-6 mb-8">
             <h3 className="font-semibold text-gray-800 mb-4">
               Selected Files ({selectedFiles.length})
             </h3>
-
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {selectedFiles.map((file, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
@@ -378,7 +349,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                       <p className="text-sm text-gray-600">{formatFileSize(file.size)}</p>
                     </div>
                   </div>
-
                   <button
                     onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== index))}
                     className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -391,8 +361,7 @@ export default function ShareFileComponent({ onFileUploaded }) {
             </div>
           </div>
         )}
-
-        {/* ==== Enhanced Password Modal (matching your screenshot) ==== */}
+        {/* ==== Enhanced Password Modal ==== */}
         {showPasswordModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
@@ -404,15 +373,12 @@ export default function ShareFileComponent({ onFileUploaded }) {
                   </svg>
                 </div>
               </div>
-
               <h2 className="text-2xl font-semibold text-gray-900 text-center mb-2">
                 Set Password
               </h2>
-
               <p className="text-gray-600 text-center mb-8 px-6">
                 Create a new Password to Secure your file
               </p>
-
               <div className="px-6 pb-6">
                 {/* New Password Input */}
                 <div className="mb-4">
@@ -442,7 +408,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                     </button>
                   </div>
                 </div>
-
                 {/* Confirm Password Input */}
                 <div className="mb-6">
                   <div className="relative">
@@ -471,7 +436,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                     </button>
                   </div>
                 </div>
-
                 {/* Password Requirements */}
                 <div className="mb-6">
                   <p className="text-sm text-gray-600 mb-2">Tips to set a Strong Password:</p>
@@ -490,7 +454,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                         Must be atleast 6 characters
                       </span>
                     </div>
-
                     <div className="flex items-center text-sm">
                       <div className={`w-4 h-4 rounded-full mr-2 flex items-center justify-center ${
                         passwordValidation.hasNumber ? 'bg-green-500' : 'bg-gray-300'
@@ -505,7 +468,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                         Must contain a number
                       </span>
                     </div>
-
                     <div className="flex items-center text-sm">
                       <div className={`w-4 h-4 rounded-full mr-2 flex items-center justify-center ${
                         passwordValidation.hasSymbol ? 'bg-green-500' : 'bg-gray-300'
@@ -520,7 +482,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                         Must contain a symbol
                       </span>
                     </div>
-
                     <div className="flex items-center text-sm">
                       <div className={`w-4 h-4 rounded-full mr-2 flex items-center justify-center ${
                         passwordValidation.hasLowerCase && passwordValidation.hasUpperCase ? 'bg-green-500' : 'bg-gray-300'
@@ -537,7 +498,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                     </div>
                   </div>
                 </div>
-
                 {/* Password Match Indicator */}
                 {confirmPassword.length > 0 && (
                   <div className={`mb-4 p-2 rounded-lg text-sm ${
@@ -546,7 +506,6 @@ export default function ShareFileComponent({ onFileUploaded }) {
                     {passwordsMatch ? 'Passwords match ✓' : 'Passwords do not match'}
                   </div>
                 )}
-
                 {/* Action Button */}
                 <button
                   onClick={handlePasswordSave}
@@ -576,4 +535,4 @@ export default function ShareFileComponent({ onFileUploaded }) {
       </div>
     </div>
   );
-} 
+}

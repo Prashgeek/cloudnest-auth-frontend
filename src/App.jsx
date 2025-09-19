@@ -4,8 +4,8 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import Dashboard from './pages/Dashboard';
-import DashboardHome from './pages/DashboardHome';
 import ProtectedRoute from './components/ProtectedRoute';
+import DashboardHome from './pages/DashboardHome';
 import Settings from './pages/Settings';
 import ViewStorage from './pages/ViewStorage';
 
@@ -16,15 +16,15 @@ export default function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/reset-password"
+        <Route 
+          path="/reset-password" 
           element={
             <ResetPasswordForm
               token={new URLSearchParams(window.location.search).get('token')}
               onBack={() => window.history.back()}
               onSuccess={() => (window.location.href = '/auth')}
             />
-          }
+          } 
         />
 
         {/* Protected dashboard with nested routes */}
@@ -33,7 +33,7 @@ export default function App() {
             <Dashboard />
           </ProtectedRoute>
         }>
-          <Route index element={<DashboardHome />} />      {/* Default dashboard content */}
+          <Route index element={<DashboardHome />} />      
           <Route path="settings" element={<Settings />}>
             <Route path="view-storage" element={<ViewStorage />} />
           </Route>
@@ -42,6 +42,7 @@ export default function App() {
         {/* Redirect any unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
       <Toaster position="top-right" richColors />
     </>
   );
