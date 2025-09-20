@@ -1,5 +1,5 @@
 // src/pages/ShareFile.jsx
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import ShareFileComponent from "../components/Dashboard/ShareFileComponent";
 
@@ -13,11 +13,29 @@ import ShareFileComponent from "../components/Dashboard/ShareFileComponent";
 export default function ShareFile() {
   const navigate = useNavigate();
   // get context provided by Dashboard (if available)
-  const outletContext = useOutletContext?.() || {};
+  // useOutletContext returns whatever Dashboard passed to <Outlet context={...} />
+  let outletContext = {};
+  try {
+    // safe call — if not mounted inside an Outlet, this returns undefined and we fall back to {}
+    outletContext = useOutletContext() || {};
+  } catch (err) {
+    outletContext = {};
+  }
   const dashboardHandleFileUploaded = outletContext.handleFileUploaded;
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const notificationTimeouts = useRef(new Map()); // map id -> timeoutId
+
+  useEffect(() => {
+    return () => {
+      // Clear any pending timeouts on unmount
+      for (const t of notificationTimeouts.current.values()) {
+        clearTimeout(t);
+      }
+      notificationTimeouts.current.clear();
+    };
+  }, []);
 
   // Save to localStorage helper (fallback if Dashboard doesn't provide a handler)
   const pushToLocalRecentFiles = (fileObj) => {
@@ -50,7 +68,7 @@ export default function ShareFile() {
 
     // Add a success notification
     const notification = {
-      id: Date.now(),
+      id: Date.now() + Math.floor(Math.random() * 999),
       type: "success",
       title: "File Uploaded Successfully!",
       message: `${uploadedFile.name} has been uploaded and is ready to share.`,
@@ -60,33 +78,85 @@ export default function ShareFile() {
     };
 
     setNotifications((prev) => [...prev, notification]);
-    // Auto-remove after 5s
-    setTimeout(() => {
+
+    // Auto-remove after 5s (store timeout so we can clear if component unmounts)
+    const to = setTimeout(() => {
       setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+      notificationTimeouts.current.delete(notification.id);
     }, 5000);
+    notificationTimeouts.current.set(notification.id, to);
   };
 
   const removeNotification = (notificationId) => {
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+    const t = notificationTimeouts.current.get(notificationId);
+    if (t) {
+      clearTimeout(t);
+      notificationTimeouts.current.delete(notificationId);
+    }
   };
 
   const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      const notification = {
-        id: Date.now(),
-        type: "info",
-        title: "Copied to Clipboard!",
-        message: "Share URL has been copied to your clipboard.",
-        timestamp: new Date().toISOString(),
-      };
-      setNotifications((prev) => [...prev, notification]);
-      setTimeout(() => {
-        setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
-      }, 3000);
-    } catch (error) {
-      console.error("Failed to copy to clipboard:", error);
+    if (!text) return;
+    // try modern API first
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      try {
+        await navigator.clipboard.writeText(text);
+        addTempInfoNotification("Copied to Clipboard!", "Share URL has been copied to your clipboard.");
+        return;
+      } catch (err) {
+        // fallthrough to legacy approach
+      }
     }
+
+    // legacy fallback
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "absolute";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      addTempInfoNotification("Copied to Clipboard!", "Share URL has been copied to your clipboard.");
+    } catch (err) {
+      console.error("Fallback clipboard copy failed", err);
+      addTempErrorNotification("Copy failed", "Unable to copy the share URL to clipboard.");
+    }
+  };
+
+  const addTempInfoNotification = (title, message) => {
+    const n = {
+      id: Date.now() + Math.floor(Math.random() * 999),
+      type: "info",
+      title,
+      message,
+      timestamp: new Date().toISOString(),
+    };
+    setNotifications((prev) => [...prev, n]);
+    const to = setTimeout(() => {
+      setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+      notificationTimeouts.current.delete(n.id);
+    }, 3000);
+    notificationTimeouts.current.set(n.id, to);
+  };
+
+  const addTempErrorNotification = (title, message) => {
+    const n = {
+      id: Date.now() + Math.floor(Math.random() * 999),
+      type: "error",
+      title,
+      message,
+      timestamp: new Date().toISOString(),
+    };
+    setNotifications((prev) => [...prev, n]);
+    const to = setTimeout(() => {
+      setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+      notificationTimeouts.current.delete(n.id);
+    }, 4000);
+    notificationTimeouts.current.set(n.id, to);
   };
 
   const onBack = () => {

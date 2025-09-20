@@ -12,8 +12,10 @@ import Settings from './pages/Settings';
 import ViewStorage from './pages/ViewStorage';
 import ShareFile from './pages/ShareFile';
 import SetPassword from './pages/SetPassword';
+import SharePage from './pages/SharePage';
 
-// lightweight placeholders — replace with your real page components if you already have them
+// Lightweight placeholders used as index / demo components inside Dashboard.
+// Replace them with your real components if you have them.
 const DashboardHome = () => (
   <div className="p-10 text-3xl text-center text-gray-600">Dashboard Home</div>
 );
@@ -66,8 +68,13 @@ export default function App() {
           <Route path="files" element={<Files />} />
           <Route path="trash" element={<Trash />} />
 
-          {/* Share / set-password pages inside dashboard */}
+          {/* Share / set-password pages inside dashboard:
+              - /dashboard/share-file  -> original upload UI (ShareFile.jsx)
+              - /dashboard/share       -> recipient selection (SharePage.jsx)
+              - /dashboard/set-password -> set password page
+          */}
           <Route path="share-file" element={<ShareFile />} />
+          <Route path="share" element={<SharePage />} />
           <Route path="set-password" element={<SetPassword />} />
 
           {/* Settings with nested view-storage */}
