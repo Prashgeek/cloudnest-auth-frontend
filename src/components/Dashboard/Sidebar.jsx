@@ -30,11 +30,40 @@ export default function Sidebar({ activeMenu = "Home", onMenuChange }) {
     { text: "Trash", icon: <DeleteIcon />, link: "/dashboard/trash" },
   ];
 
+  // Helper: normalize path (remove trailing slashes)
+  const normalize = (p = "") => (p.endsWith("/") && p.length > 1 ? p.replace(/\/+$/, "") : p);
+
+  const getIsActive = (itemLink) => {
+    const pathname = normalize(location.pathname);
+    const link = normalize(itemLink);
+
+    // Exact match for dashboard root
+    if (link === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    // For other links, match if path starts with the link (so nested routes highlight)
+    return pathname === link || pathname.startsWith(link + "/");
+  };
+
   const handleMenuClick = (item) => {
     if (onMenuChange) {
+      // Inform parent about the menu change (keeps local UI state in sync)
       onMenuChange(item.text);
     }
-    navigate(item.link); // Navigate to nested dashboard route
+    // Navigate only if we're not already on the same path (avoids redundant pushes)
+    const target = normalize(item.link);
+    const current = normalize(location.pathname);
+    if (current !== target) {
+      navigate(item.link);
+    }
+  };
+
+  const handleKeyDown = (e, item) => {
+    // Support keyboard activation (Enter / Space)
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleMenuClick(item);
+    }
   };
 
   return (
@@ -60,10 +89,10 @@ export default function Sidebar({ activeMenu = "Home", onMenuChange }) {
           <img
             src="/logo.png"
             alt="Cloudnest Logo"
-            style={{ width: "78px", height: "auto" }}
+            style={{ width: "78px", height: "auto", display: "block" }}
             onError={(e) => {
-              e.target.style.display = "none";
-              e.target.nextSibling.style.display = "block";
+              // hide broken image safely and do not rely on sibling elements
+              e.currentTarget.style.display = "none";
             }}
           />
           <Box
@@ -82,19 +111,20 @@ export default function Sidebar({ activeMenu = "Home", onMenuChange }) {
         <Box sx={{ overflow: "auto" }}>
           <List sx={{ display: "flex", flexDirection: "column", gap: 4.5 }}>
             {menuItems.map((item) => {
-              // Highlight based on current path
-              const isActive = location.pathname === item.link;
+              const isActive = getIsActive(item.link);
 
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton
                     onClick={() => handleMenuClick(item)}
+                    onKeyDown={(e) => handleKeyDown(e, item)}
+                    aria-current={isActive ? "page" : undefined}
                     sx={{
-                      opacity: isActive ? 1 : 0.5,
+                      opacity: isActive ? 1 : 0.65,
                       transition: "opacity 0.2s ease-in-out",
                       backgroundColor: "transparent",
                       "&:hover": {
-                        opacity: 0.8,
+                        opacity: 0.9,
                         backgroundColor: "transparent",
                       },
                       "&:active": {

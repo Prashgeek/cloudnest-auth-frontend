@@ -3,18 +3,23 @@ import { Facebook, Instagram, Twitter, LinkedIn, YouTube } from "@mui/icons-mate
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1f2937] text-white">
-      <div className="flex flex-col items-center justify-center py-6 text-center text-sm space-y-4">
+    <footer className="w-full bg-[#1f2937] text-white">
+      <div className="max-w-7xl mx-auto flex flex-col items-center justify-center py-6 text-center text-sm space-y-4 px-4 sm:px-6 lg:px-8">
         {/* © text + links */}
         <div>
           <p className="mb-2">© 2025 Cloudnest. All rights reserved.</p>
           <div className="flex justify-center gap-6">
-            <a href="/privacy" className="hover:text-gray-300">Privacy Policy</a>
-            <a href="/terms" className="hover:text-gray-300">Terms of Services</a>
-            <a href="/contact" className="hover:text-gray-300">Contact</a>
+            <a href="/privacy" className="hover:text-gray-300">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="hover:text-gray-300">
+              Terms of Services
+            </a>
+            <a href="/contact" className="hover:text-gray-300">
+              Contact
+            </a>
           </div>
         </div>
-
         {/* Social icons */}
         <div className="flex justify-center gap-6">
           <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
