@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { ShareIcon } from "../components/CustomIcons"; // <-- import the SVG icon
+import { ShareIcon } from "../components/CustomIcons"; // SVG Icon
 
+// Keep your original CSS entirely as it is
 const css = `:root{
   --page-bg: #efefef;
   --card-bg: #F8F7F7;
@@ -109,13 +110,15 @@ export default function SharePage() {
   const navigate = useNavigate();
   const outlet = useOutletContext?.() || {};
   const handleFileUploaded = outlet.handleFileUploaded || (() => {});
-  const pendingFiles = (location.state && location.state.pendingFiles) || [];
-  const passwordSet = (location.state && location.state.passwordSet) || false;
+  const pendingFiles = location.state?.pendingFiles || [];
+  const passwordSet = location.state?.passwordSet || false;
 
   const [users, setUsers] = useState(initialUsers);
-  const [toastMsg, setToastMsg] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPerms, setCurrentPerms] = useState({});
+  const [emailInput, setEmailInput] = useState('');
+  const [toastMsg, setToastMsg] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     if (toastMsg) {
@@ -125,52 +128,54 @@ export default function SharePage() {
   }, [toastMsg]);
 
   const handleCheckboxChange = (id, checked) => {
-    setSelectedIds((prev) =>
-      checked ? [...new Set([...prev, id])] : prev.filter((i) => i !== id)
+    setSelectedIds(prev =>
+      checked ? [...new Set([...prev, id])] : prev.filter(i => i !== id)
     );
   };
 
   const handlePermChange = (id, value) => {
-    setCurrentPerms((prev) => ({ ...prev, [id]: value }));
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id ? { ...u, permission: value } : u
-      )
-    );
+    setCurrentPerms(prev => ({ ...prev, [id]: value }));
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, permission: value } : u));
   };
+
+  const showToast = (msg) => setToastMsg(msg);
 
   const confirmShare = async () => {
     if (selectedIds.length === 0) {
-      setToastMsg('No users selected. Please choose users to share with.');
+      showToast('No users selected. Please choose users to share with.');
       return;
     }
-    const sharedWith = users
-      .filter((u) => selectedIds.includes(u.id))
-      .map((u) => ({
-        email: u.email,
-        name: u.name,
-        permission: currentPerms[u.id] || u.permission,
-      }));
-    setToastMsg('Sharing files...');
-    for (let p = 0; p <= 100; p += 20) {
-      await new Promise((r) => setTimeout(r, 180));
+
+    setIsSharing(true);
+    showToast('Sharing files...');
+
+    try {
+      // Simulate share delay
+      await new Promise(r => setTimeout(r, 1500));
+
+      const now = new Date().toISOString().split('T')[0];
+      pendingFiles.forEach(f => {
+        handleFileUploaded({
+          name: f.name || 'Untitled',
+          size: f.size ? `${(f.size / 1024).toFixed(2)} KB` : f.sizeText || '1.2 MB',
+          date: now,
+          type: 'shared',
+          sharedWith: users.filter(u => selectedIds.includes(u.id)).map(u => ({
+            email: u.email,
+            name: u.name,
+            permission: currentPerms[u.id] || u.permission,
+          })),
+          hasPassword: !!passwordSet,
+        });
+      });
+
+      navigate('/dashboard/success');
+    } catch (err) {
+      console.error(err);
+      navigate('/dashboard/failed');
+    } finally {
+      setIsSharing(false);
     }
-    const now = new Date().toISOString().split('T')[0];
-    pendingFiles.forEach((f) => {
-      const fileObj = {
-        name: f.name || 'Untitled',
-        size: f.size
-          ? `${(f.size / 1024).toFixed(2)} KB`
-          : f.sizeText || '1.2 MB',
-        date: now,
-        type: 'shared',
-        sharedWith,
-        hasPassword: !!passwordSet,
-      };
-      handleFileUploaded(fileObj);
-    });
-    setToastMsg('Shared successfully');
-    setTimeout(() => navigate('/dashboard'), 900);
   };
 
   return (
@@ -196,13 +201,15 @@ export default function SharePage() {
                 <input
                   id="emailInput"
                   className="email-input"
-                  placeholder="Search by name or email"
+                  placeholder="Enter names, email, or address"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
                 />
               </div>
             </div>
 
             <div className="rows" aria-live="polite">
-              {users.map((user) => (
+              {users.map(user => (
                 <UserRow
                   key={user.id}
                   user={user}
@@ -213,20 +220,20 @@ export default function SharePage() {
                 />
               ))}
             </div>
+
+            <div className="button-row">
+              <button
+                className="share-btn"
+                onClick={confirmShare}
+                disabled={isSharing || selectedIds.length === 0}
+              >
+                {isSharing ? 'Sharing...' : 'Share'}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="button-row">
-          <button className="share-btn" onClick={confirmShare}>
-            Share
-          </button>
-        </div>
-
-        <div
-          className={`toast ${toastMsg ? 'show' : ''}`}
-          role="status"
-          aria-live="polite"
-        >
+        <div className={`toast ${toastMsg ? 'show' : ''}`} role="status" aria-live="polite">
           {toastMsg}
         </div>
       </div>

@@ -121,20 +121,21 @@ function CloudStorage() {
               </p>
             </div>
             
-            {/* Action button */}
-            <button 
-            onClick={() => navigate('view-storage')}
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 self-start group">
-              View Details
-              <svg 
-                className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform duration-200" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+           {/* Action button */}
+<button 
+  onClick={() => navigate('/dashboard/view-storage')}
+  className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 self-start group"
+>
+  View Details
+  <svg 
+    className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform duration-200" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+</button>
           </div>
         </div>
 
