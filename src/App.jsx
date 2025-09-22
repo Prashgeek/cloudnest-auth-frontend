@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
+
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
@@ -14,9 +15,9 @@ import SetPassword from './pages/SetPassword';
 import SharePage from './pages/SharePage';
 import SuccessPage from './pages/SuccessPage';
 import FailedPage from './pages/FailedPage';
+import AccountProfile from './pages/AccountProfile';
 
-// Lightweight placeholders used as index / demo components inside Dashboard.
-// Replace them with your real components if you have them.
+// Lightweight placeholders used as index / demo components inside Dashboard
 const DashboardHome = () => (
   <div style={{ padding: '20px' }}>
     <h2>Dashboard Home</h2>
@@ -63,9 +64,8 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          {/* Nested Routes inside Dashboard */}
+          {/* Dashboard main pages */}
           <Route index element={<DashboardHome />} />
-          <Route path="settings" element={<Settings />} />
           <Route path="downloads" element={<Downloads />} />
           <Route path="files" element={<Files />} />
           <Route path="trash" element={<Trash />} />
@@ -75,9 +75,19 @@ export default function App() {
           <Route path="success" element={<SuccessPage />} />
           <Route path="failed" element={<FailedPage />} />
           <Route path="view-storage" element={<ViewStorage />} />
+
+          {/* Settings with nested routes */}
+          <Route path="settings/*" element={<Settings />}>
+            {/* Default main settings page */}
+            <Route index element={null} />
+            <Route path="account" element={<AccountProfile />} />
+          </Route>
+
+          {/* Fallback for unknown dashboard sub-path */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
-        {/* Fallback */}
+        {/* Global fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

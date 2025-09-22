@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ShareIcon } from "../components/CustomIcons"; // SVG Icon
 
-// Keep your original CSS entirely as it is
+// CSS with bottom-center share button & sharing popup inside card
 const css = `:root{
   --page-bg: #efefef;
   --card-bg: #F8F7F7;
@@ -19,25 +19,10 @@ html,body{height:100%;margin:0;font-family:"Open Sans", system-ui, -apple-system
 .card { width:100%; background: var(--card-bg); min-height:557px; border-radius:20px; border: 1px solid var(--card-border); box-shadow: 0px 4px 12px 0px var(--card-shadow); padding:24px 36px; box-sizing:border-box; position:relative; overflow:visible; display:flex; flex-direction:column; }
 .subtitle-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .subtitle { font-size:18px; color:#333; font-weight:600; }
-.share-link { 
-  color: #000000; 
-  font-size:20px; 
-  font-weight:600; 
-  cursor:pointer; 
-}
+.share-link { color: #000000; font-size:20px; font-weight:600; cursor:pointer; }
 .top-row { display:flex; gap:18px; align-items:flex-start; flex:0 0 auto; }
 .email-row { flex: 1 1 auto; margin-top:0; display:flex; gap:12px; align-items:center; }
-.email-input {
-  width: 969px;
-  height: 81px;
-  border-radius: 20px;
-  padding: 17px 27px;
-  box-sizing: border-box;
-  border: 1px solid #00000080;
-  background: #FFFFFF;
-  font-size: 18px;
-  outline: none;
-}
+.email-input { width: 969px; height: 81px; border-radius: 20px; padding: 17px 27px; box-sizing: border-box; border: 1px solid #00000080; background: #FFFFFF; font-size: 18px; outline: none; }
 .rows { margin-top:18px; display:flex; flex-direction:column; gap:12px; flex: 1 1 auto; min-height:0; overflow:auto; padding-right:8px; box-sizing:border-box; }
 .row { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-radius:12px; background:transparent; box-sizing:border-box; min-width:0; }
 .left-group { display:flex; gap:12px; align-items:center; min-width:0; }
@@ -52,10 +37,72 @@ html,body{height:100%;margin:0;font-family:"Open Sans", system-ui, -apple-system
 .row-checkbox input[type="checkbox"]:checked + .checkmark::before { content: "✔"; color: #000; font-size: 16px; font-weight: bold; position: absolute; }
 .row-perm-select { appearance:none; -webkit-appearance:none; height:32px; min-width:110px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); padding:2px 8px; background:#fff; font-weight:600; font-family:"Open Sans",sans-serif; cursor:pointer; box-sizing:border-box; font-size:14px; color:#222; }
 .row-perm-select:disabled { opacity:0.6; cursor:default; }
-.button-row { width:100%; display:flex; justify-content:center; margin-top:20px; }
-.share-btn { width:220px; height:60px; border-radius:12px; background:var(--primary); color:#fff; border:none; font-size:18px; font-weight:600; cursor:pointer; }
-.toast { position:fixed; right:20px; bottom:20px; background:#111; color:#fff; padding:12px 16px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.2); opacity:0; transform:translateY(8px); transition:all .25s ease; z-index:120; }
+.toast { position:fixed; right:20px; bottom:90px; background:#111; color:#fff; padding:12px 16px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.2); opacity:0; transform:translateY(8px); transition:all .25s ease; z-index:120; }
 .toast.show { opacity:1; transform:translateY(0); }
+
+/* ...all the previous code above remains the same... */
+
+/* Bottom-center Share Button */
+.bottom-share-btn {
+  position: absolute; /* place relative to stage/card-wrap if needed */
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 355px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  z-index: 150;
+}
+.bottom-share-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* Sharing popup inside card */
+.sharing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  border-radius: 20px;
+}
+.sharing-popup {
+  background: var(--primary);
+  color: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transform: scale(0.85);
+  opacity: 0;
+  animation: popupAnimation 0.3s forwards;
+}
+@keyframes popupAnimation { to { transform: scale(1); opacity: 1; } }
+.spinner {
+  width: 35px;
+  height: 35px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.sharing-text { font-size: 16px; font-weight: 600; text-align: center; }
+
 @media (max-width:940px){ .card-wrap { width:92%; } .share-link { font-size:14px; } }`;
 
 const initialUsers = [
@@ -147,10 +194,8 @@ export default function SharePage() {
     }
 
     setIsSharing(true);
-    showToast('Sharing files...');
 
     try {
-      // Simulate share delay
       await new Promise(r => setTimeout(r, 1500));
 
       const now = new Date().toISOString().split('T')[0];
@@ -221,18 +266,28 @@ export default function SharePage() {
               ))}
             </div>
 
-            <div className="button-row">
-              <button
-                className="share-btn"
-                onClick={confirmShare}
-                disabled={isSharing || selectedIds.length === 0}
-              >
-                {isSharing ? 'Sharing...' : 'Share'}
-              </button>
-            </div>
+            {/* Sharing popup inside card */}
+            {isSharing && (
+              <div className="sharing-overlay" role="alert" aria-live="assertive">
+                <div className="sharing-popup">
+                  <div className="spinner"></div>
+                  <div className="sharing-text">Sharing your files...</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Bottom-center Share Button */}
+        <button
+          className="bottom-share-btn"
+          onClick={confirmShare}
+          disabled={isSharing || selectedIds.length === 0}
+        >
+          {isSharing ? 'Sharing...' : 'Share'}
+        </button>
+
+        {/* Toast Notification */}
         <div className={`toast ${toastMsg ? 'show' : ''}`} role="status" aria-live="polite">
           {toastMsg}
         </div>

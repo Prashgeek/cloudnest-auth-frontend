@@ -1,28 +1,52 @@
-import React, { useState, useEffect } from "react";
+// src/components/Dashboard/Banner.jsx
+import React, { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
+
+const LOCAL_PROFILE_KEY = "profileData_v1";
 
 function Banner() {
   const [userName, setUserName] = useState("Test User");
   const [userEmail, setUserEmail] = useState("test@example.com");
+  const [userAvatar, setUserAvatar] = useState("");
 
-  useEffect(() => {
+  const loadProfileFromStorage = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(LOCAL_PROFILE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw || "{}");
+        if (parsed.fullName) setUserName(parsed.fullName);
+        if (parsed.email) setUserEmail(parsed.email);
+        if (parsed.avatar) setUserAvatar(parsed.avatar);
+        return;
+      }
+    } catch (err) {
+      console.warn("Banner: parse error", err);
+    }
+
+    // Fallback legacy keys
     const storedUserName = localStorage.getItem("userName");
     const storedUserEmail = localStorage.getItem("userEmail");
-    const authToken = localStorage.getItem("authToken");
+    const storedUserAvatar = localStorage.getItem("userAvatar");
 
-    // ✅ Only set if value exists
     if (storedUserName) setUserName(storedUserName);
     if (storedUserEmail) setUserEmail(storedUserEmail);
-
-    // ✅ Override if token found
-    if (authToken) {
-      if (authToken.includes("google")) {
-        setUserName("Google User");
-      } else if (authToken.includes("apple")) {
-        setUserName("Apple User");
-      }
-    }
+    if (storedUserAvatar) setUserAvatar(storedUserAvatar);
   }, []);
+
+  useEffect(() => {
+    loadProfileFromStorage();
+
+    const onStorage = () => loadProfileFromStorage();
+    const onProfileUpdated = () => loadProfileFromStorage();
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("profileUpdated", onProfileUpdated);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("profileUpdated", onProfileUpdated);
+    };
+  }, [loadProfileFromStorage]);
 
   return (
     <Box
@@ -42,7 +66,7 @@ function Banner() {
     >
       {/* Avatar */}
       <Avatar
-        src="/broken-image.jpg"
+        src={userAvatar || undefined}
         sx={(theme) => ({
           width: 120,
           height: 120,
@@ -58,37 +82,16 @@ function Banner() {
             transform: "scale(1.1)",
           },
         })}
-      />
+      >
+        {!userAvatar && userName?.[0]} {/* fallback letter */}
+      </Avatar>
 
       {/* User Info */}
-      <Box
-        sx={{
-          ml: 3,
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        <Typography
-          variant="h5"
-          fontWeight="700"
-          sx={{
-            color: "text.primary",
-            lineHeight: 1.3,
-            transition: "all 0.3s ease",
-          }}
-        >
+      <Box sx={{ ml: 3, flex: 1 }}>
+        <Typography variant="h5" fontWeight="700">
           {userName}
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            mt: 0.5,
-            transition: "all 0.3s ease",
-          }}
-        >
+        <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
           {userEmail}
         </Typography>
       </Box>
