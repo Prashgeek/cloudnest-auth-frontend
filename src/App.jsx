@@ -16,33 +16,15 @@ import SharePage from './pages/SharePage';
 import SuccessPage from './pages/SuccessPage';
 import FailedPage from './pages/FailedPage';
 import AccountProfile from './pages/AccountProfile';
+import Downloads from './pages/Downloads';
+import Trash from './pages/Trash';
+import Files from './pages/Files';
 
 // Lightweight placeholders used as index / demo components inside Dashboard
 const DashboardHome = () => (
   <div style={{ padding: '20px' }}>
     <h2>Dashboard Home</h2>
     <p>Welcome to your dashboard!</p>
-  </div>
-);
-
-const Downloads = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Downloads</h2>
-    <p>Your downloaded files will appear here.</p>
-  </div>
-);
-
-const Files = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Files</h2>
-    <p>All your files are listed here.</p>
-  </div>
-);
-
-const Trash = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Trash</h2>
-    <p>Deleted files can be found here.</p>
   </div>
 );
 
