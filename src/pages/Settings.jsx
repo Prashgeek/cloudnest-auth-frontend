@@ -5,7 +5,6 @@ import CloudStorage from "../components/Dashboard/Settings/CloudStorage";
 import NotificationSettings from "../components/Dashboard/Settings/NotifcationSettings";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 function Settings() {
@@ -31,17 +30,31 @@ function Settings() {
             <CloudStorage />
             <NotificationSettings sx={{ gridColumn: "1" }} />
           </Box>
+
+          {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 m-4 justify-center">
+            {/* Change Password */}
             <button
               className="flex-1 flex items-center gap-2 bg-white text-gray-900 font-semibold px-5 py-3 rounded-2xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-105 transition-transform duration-200 min-w-[180px] mx-2 justify-center"
-              onClick={() => navigate("account")} // RELATIVE path!
+              onClick={() => navigate("/dashboard/change-password")}
             >
-              View Details
+              <LockOutlinedIcon
+                sx={{ color: "rgba(0,0,0,0.7)" }}
+                fontSize="large"
+              />
+              Change Password
             </button>
-            <button className="flex-1 flex items-center gap-2 bg-white text-gray-900 font-semibold px-5 py-3 rounded-2xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-105 transition-transform duration-200 min-w-[180px] mx-2 justify-center">
+
+            {/* Upgrade */}
+            <button
+              className="flex-1 flex items-center gap-2 bg-white text-gray-900 font-semibold px-5 py-3 rounded-2xl shadow-md border border-gray-200 hover:shadow-xl hover:scale-105 transition-transform duration-200 min-w-[180px] mx-2 justify-center"
+              onClick={() => navigate("/dashboard/upgrade")}
+            >
               Upgrade
             </button>
           </div>
+
+          {/* Logout */}
           <div className="flex justify-center m-4">
             <button
               className="flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-6 py-3 rounded-2xl shadow-md border border-blue-600 hover:bg-blue-700 transition-all duration-200 min-w-[300px]"

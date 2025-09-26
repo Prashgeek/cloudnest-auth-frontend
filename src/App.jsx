@@ -20,6 +20,10 @@ import Downloads from './pages/Downloads';
 import Trash from './pages/Trash';
 import Files from './pages/Files';
 
+// New pages
+import UpgradeSpace from './pages/UpgradeSpace';
+import ChangePassword from './pages/ChangePassword';  // ✅ Added import
+
 // Lightweight placeholders used as index / demo components inside Dashboard
 const DashboardHome = () => (
   <div style={{ padding: '20px' }}>
@@ -57,6 +61,10 @@ export default function App() {
           <Route path="success" element={<SuccessPage />} />
           <Route path="failed" element={<FailedPage />} />
           <Route path="view-storage" element={<ViewStorage />} />
+
+          {/* New Pages */}
+          <Route path="upgrade" element={<UpgradeSpace />} />      {/* ✅ Upgrade */}
+          <Route path="change-password" element={<ChangePassword />} /> {/* ✅ Change Password */}
 
           {/* Settings with nested routes */}
           <Route path="settings/*" element={<Settings />}>
