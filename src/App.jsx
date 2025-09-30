@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
@@ -20,11 +21,13 @@ import Downloads from './pages/Downloads';
 import Trash from './pages/Trash';
 import Files from './pages/Files';
 
-// New pages
+import Notifications from './pages/Notifications';
 import UpgradeSpace from './pages/UpgradeSpace';
-import ChangePassword from './pages/ChangePassword';  // ✅ Added import
+import ChangePassword from './pages/ChangePassword';
+import Header from './components/Dashboard/Header';
+import Footer from './components/Dashboard/Footer';
 
-// Lightweight placeholders used as index / demo components inside Dashboard
+// Placeholder for dashboard home
 const DashboardHome = () => (
   <div style={{ padding: '20px' }}>
     <h2>Dashboard Home</h2>
@@ -34,14 +37,14 @@ const DashboardHome = () => (
 
 export default function App() {
   return (
-    <>
+    <NotificationProvider>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
 
-        {/* Protected Dashboard Routes */}
+        {/* Protected Dashboard */}
         <Route
           path="/dashboard/*"
           element={
@@ -50,7 +53,6 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          {/* Dashboard main pages */}
           <Route index element={<DashboardHome />} />
           <Route path="downloads" element={<Downloads />} />
           <Route path="files" element={<Files />} />
@@ -63,25 +65,39 @@ export default function App() {
           <Route path="view-storage" element={<ViewStorage />} />
 
           {/* New Pages */}
-          <Route path="upgrade" element={<UpgradeSpace />} />      {/* ✅ Upgrade */}
-          <Route path="change-password" element={<ChangePassword />} /> {/* ✅ Change Password */}
+          <Route path="upgrade" element={<UpgradeSpace />} />
+          <Route path="change-password" element={<ChangePassword />} />
 
-          {/* Settings with nested routes */}
+          {/* Settings */}
           <Route path="settings/*" element={<Settings />}>
-            {/* Default main settings page */}
             <Route index element={null} />
             <Route path="account" element={<AccountProfile />} />
           </Route>
 
-          {/* Fallback for unknown dashboard sub-path */}
+          {/* Fallback for nested dashboard routes */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
+
+        {/* Top-level protected Notifications route WITHOUT Sidebar.
+            It renders Header -> Notifications -> Footer so no Sidebar shows. */}
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header />
+                <Notifications />
+                <Footer />
+              </>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Global fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
       <Toaster position="top-right" />
-    </>
+    </NotificationProvider>
   );
 }

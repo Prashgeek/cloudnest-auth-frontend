@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { ShareIcon } from "../components/CustomIcons"; // SVG Icon
+import { ShareIcon } from "../components/CustomIcons";
+import FileManager from '../utils/fileManager';
+import { useNotifications } from '../contexts/NotificationContext'; // <-- added
 
-// CSS with bottom-center share button & sharing popup inside card
 const css = `:root{
   --page-bg: #efefef;
   --card-bg: #F8F7F7;
@@ -11,97 +12,108 @@ const css = `:root{
   --primary: #007AFF;
   --muted: #6b6b6b;
 }
-html,body{height:100%;margin:0;font-family:"Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--page-bg);}
-.stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:20px;padding:32px 32px 150px 32px;box-sizing:border-box;position:relative;}
-.top-header { display:flex; align-items:center; gap:12px; z-index:10; }
-.top-header h1{ margin:0; width:fit-content; height:54px; line-height:54px; font-family:"Inter",sans-serif; font-weight:700; font-size:45px; color:#111; text-align:left; display:flex; align-items:center; gap:10px; }
-.card-wrap { width:100%; max-width:1048px; box-sizing:border-box; position:relative; }
-.card { width:100%; background: var(--card-bg); min-height:557px; border-radius:20px; border: 1px solid var(--card-border); box-shadow: 0px 4px 12px 0px var(--card-shadow); padding:24px 36px; box-sizing:border-box; position:relative; overflow:visible; display:flex; flex-direction:column; }
-.subtitle-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.subtitle { font-size:18px; color:#333; font-weight:600; }
-.share-link { color: #000000; font-size:20px; font-weight:600; cursor:pointer; }
-.top-row { display:flex; gap:18px; align-items:flex-start; flex:0 0 auto; }
-.email-row { flex: 1 1 auto; margin-top:0; display:flex; gap:12px; align-items:center; }
-.email-input { width: 969px; height: 81px; border-radius: 20px; padding: 17px 27px; box-sizing: border-box; border: 1px solid #00000080; background: #FFFFFF; font-size: 18px; outline: none; }
-.rows { margin-top:18px; display:flex; flex-direction:column; gap:12px; flex: 1 1 auto; min-height:0; overflow:auto; padding-right:8px; box-sizing:border-box; }
-.row { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-radius:12px; background:transparent; box-sizing:border-box; min-width:0; }
-.left-group { display:flex; gap:12px; align-items:center; min-width:0; }
-.profile { display:flex; gap:12px; align-items:center; width:186px; height:41px; padding:6px 10px; border-radius:8px; background:#fff; box-sizing:border-box; flex-shrink:0; }
-.avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; background:linear-gradient(135deg,#d8d8d8,#bcbcbc); font-family:Inter, sans-serif; flex-shrink:0; }
-.name { font-size:16px; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.controls { display:flex; align-items:center; gap:12px; margin-left:12px; min-width:0; }
-.row-checkbox { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 15px; font-family: "Open Sans", sans-serif; user-select: none; }
-.row-checkbox input[type="checkbox"] { display: none; }
-.row-checkbox .checkmark { width: 22px; height: 22px; border: 2px solid #000; border-radius: 4px; position: relative; display: flex; align-items: center; justify-content: center; background: #fff; transition: all 0.2s ease; }
-.row-checkbox .checkmark::after { content: ""; position: absolute; right: -7px; bottom: -7px; width: 21px; height: 22px; border-right: 3px solid #000; border-bottom: 3px solid #000; border-radius: 0 0 8px 0; pointer-events: none; }
-.row-checkbox input[type="checkbox"]:checked + .checkmark::before { content: "✔"; color: #000; font-size: 16px; font-weight: bold; position: absolute; }
-.row-perm-select { appearance:none; -webkit-appearance:none; height:32px; min-width:110px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); padding:2px 8px; background:#fff; font-weight:600; font-family:"Open Sans",sans-serif; cursor:pointer; box-sizing:border-box; font-size:14px; color:#222; }
-.row-perm-select:disabled { opacity:0.6; cursor:default; }
-.toast { position:fixed; right:20px; bottom:90px; background:#111; color:#fff; padding:12px 16px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.2); opacity:0; transform:translateY(8px); transition:all .25s ease; z-index:120; }
-.toast.show { opacity:1; transform:translateY(0); }
+html,body{height:100%;margin:0;font-family:"Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--page-bg);} 
+.stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:20px;padding:32px 32px 150px 32px;box-sizing:border-box;position:relative;} 
+.top-header { display:flex; align-items:center; gap:12px; z-index:10; } 
+.top-header h1{ margin:0; width:fit-content; height:54px; line-height:54px; font-family:"Inter",sans-serif; font-weight:700; font-size:45px; color:#111; text-align:left; display:flex; align-items:center; gap:10px; } 
+.card-wrap { width:100%; max-width:1048px; box-sizing:border-box; position:relative; } 
+.card { width:100%; background: var(--card-bg); min-height:557px; border-radius:20px; border: 1px solid var(--card-border); box-shadow: 0px 4px 12px 0px var(--card-shadow); padding:24px 36px; box-sizing:border-box; position:relative; overflow:visible; display:flex; flex-direction:column; } 
+.subtitle-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; } 
+.subtitle { font-size:18px; color:#333; font-weight:600; } 
+.share-link { color: #000000; font-size:20px; font-weight:600; cursor:pointer; } 
+.top-row { display:flex; gap:18px; align-items:flex-start; flex:0 0 auto; } 
+.email-row { flex: 1 1 auto; margin-top:0; display:flex; gap:12px; align-items:center; } 
+.email-input { width: 969px; height: 81px; border-radius: 20px; padding: 17px 27px; box-sizing: border-box; border: 1px solid #00000080; background: #FFFFFF; font-size: 18px; outline: none; } 
+.rows { margin-top:18px; display:flex; flex-direction:column; gap:12px; flex: 1 1 auto; min-height:0; overflow:auto; padding-right:8px; box-sizing:border-box; } 
+.row { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-radius:12px; background:transparent; box-sizing:border-box; min-width:0; } 
+.left-group { display:flex; gap:12px; align-items:center; min-width:0; } 
+.profile { display:flex; gap:12px; align-items:center; width:186px; height:41px; padding:6px 10px; border-radius:8px; background:#fff; box-sizing:border-box; flex-shrink:0; } 
+.avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; background:linear-gradient(135deg,#d8d8d8,#bcbcbc); font-family:Inter, sans-serif; flex-shrink:0; } 
+.name { font-size:16px; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } 
+.controls { display:flex; align-items:center; gap:12px; margin-left:12px; min-width:0; } 
+.row-checkbox { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 15px; font-family: "Open Sans", sans-serif; user-select: none; } 
+.row-checkbox input[type="checkbox"] { display: none; } 
+.row-checkbox .checkmark { width: 22px; height: 22px; border: 2px solid #000; border-radius: 4px; position: relative; display: flex; align-items: center; justify-content: center; background: #fff; transition: all 0.2s ease; } 
+.row-checkbox .checkmark::after { content: ""; position: absolute; right: -7px; bottom: -7px; width: 21px; height: 22px; border-right: 3px solid #000; border-bottom: 3px solid #000; border-radius: 0 0 8px 0; pointer-events: none; } 
+.row-checkbox input[type="checkbox"]:checked + .checkmark::before { content: "✔"; color: #000; font-size: 16px; font-weight: bold; position: absolute; } 
+.row-perm-select { appearance:none; -webkit-appearance:none; height:32px; min-width:110px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); padding:2px 8px; background:#fff; font-weight:600; font-family:"Open Sans",sans-serif; cursor:pointer; box-sizing:border-box; font-size:14px; color:#222; } 
+.row-perm-select:disabled { opacity:0.6; cursor:default; } 
 
-/* ...all the previous code above remains the same... */
+/* Bottom-center Share Button */ 
+.bottom-share-btn { 
+  position: absolute; 
+  bottom: 20px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: 355px; 
+  height: 56px; 
+  border-radius: 12px; 
+  background: var(--primary); 
+  color: #fff; 
+  border: none; 
+  font-size: 18px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2); 
+  z-index: 150; 
+} 
+.bottom-share-btn:disabled { opacity: 0.6; cursor: default; } 
 
-/* Bottom-center Share Button */
-.bottom-share-btn {
-  position: absolute; /* place relative to stage/card-wrap if needed */
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 355px;
-  height: 56px;
-  border-radius: 12px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  z-index: 150;
-}
-.bottom-share-btn:disabled { opacity: 0.6; cursor: default; }
-
-/* Sharing popup inside card */
-.sharing-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255,255,255,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  border-radius: 20px;
-}
-.sharing-popup {
-  background: var(--primary);
-  color: #fff;
-  padding: 20px 30px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  transform: scale(0.85);
-  opacity: 0;
-  animation: popupAnimation 0.3s forwards;
-}
-@keyframes popupAnimation { to { transform: scale(1); opacity: 1; } }
-.spinner {
-  width: 35px;
-  height: 35px;
-  border: 4px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.sharing-text { font-size: 16px; font-weight: 600; text-align: center; }
+/* Sharing overlay */ 
+.sharing-overlay { 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(255,255,255,0.6); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 200; 
+} 
+.sharing-popup { 
+  background: #fff; 
+  color: #fff; 
+  padding: 20px 30px; 
+  border-radius: 12px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 15px; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2); 
+} 
+.spinner { 
+  width: 50px; 
+  height: 50px; 
+  border: 5px solid rgba(0,0,0,0.2); 
+  border-top-color: var(--primary); 
+  border-radius: 50%; 
+  animation: spin 1s linear infinite; 
+} 
+@keyframes spin { to { transform: rotate(360deg); } } 
+.checkmark-success { 
+  width: 50px; 
+  height: 50px; 
+  border-radius: 50%; 
+  background: var(--primary); 
+  color: #fff; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 24px; 
+  font-weight: bold; 
+  animation: pop 0.3s ease forwards; 
+} 
+@keyframes pop { 
+  0% { transform: scale(0.5); opacity: 0; } 
+  100% { transform: scale(1); opacity: 1; } 
+} 
+.sharing-text { 
+  font-size: 16px; 
+  font-weight: 600; 
+  text-align: center; 
+} 
 
 @media (max-width:940px){ .card-wrap { width:92%; } .share-link { font-size:14px; } }`;
 
@@ -156,9 +168,11 @@ export default function SharePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const outlet = useOutletContext?.() || {};
-  const handleFileUploaded = outlet.handleFileUploaded || (() => {});
   const pendingFiles = location.state?.pendingFiles || [];
   const passwordSet = location.state?.passwordSet || false;
+  const passwordValue = location.state?.passwordValue ?? null;
+
+  const { helpers } = useNotifications(); // <-- use notification helpers
 
   const [users, setUsers] = useState(initialUsers);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -166,6 +180,7 @@ export default function SharePage() {
   const [emailInput, setEmailInput] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [isSharing, setIsSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   useEffect(() => {
     if (toastMsg) {
@@ -194,31 +209,76 @@ export default function SharePage() {
     }
 
     setIsSharing(true);
+    setShareSuccess(false);
 
     try {
-      await new Promise(r => setTimeout(r, 1500));
+      const selectedUsers = users
+        .filter(user => selectedIds.includes(user.id))
+        .map(user => ({
+          email: user.email,
+          name: user.name,
+          permission: currentPerms[user.id] || user.permission
+        }));
 
-      const now = new Date().toISOString().split('T')[0];
-      pendingFiles.forEach(f => {
-        handleFileUploaded({
-          name: f.name || 'Untitled',
-          size: f.size ? `${(f.size / 1024).toFixed(2)} KB` : f.sizeText || '1.2 MB',
-          date: now,
+      // Simulate delay to show spinner
+      await new Promise(r => setTimeout(r, 1200));
+
+      for (const file of pendingFiles) {
+        // determine the password for this shared file: prefer file.password if already attached,
+        // otherwise use the passwordValue passed via location.state
+        const filePassword = (file && file.password) ? file.password : (passwordSet ? passwordValue : null);
+        const sharedFile = {
+          id: Date.now() + Math.random(),
+          name: file.name || 'Untitled',
+          size: file.size ? `${(file.size / 1024).toFixed(2)} KB` : file.sizeText || '1.2 MB',
           type: 'shared',
-          sharedWith: users.filter(u => selectedIds.includes(u.id)).map(u => ({
-            email: u.email,
-            name: u.name,
-            permission: currentPerms[u.id] || u.permission,
-          })),
-          hasPassword: !!passwordSet,
-        });
-      });
+          folder: 'Shared',
+          lastModified: new Date().toISOString(),
+          sharedWith: selectedUsers,
+          hasPassword: !!filePassword,
+          password: filePassword || null,
+          dataUrl: file.dataUrl || null,
+          originalFile: file
+        };
+        FileManager.addFile(sharedFile);
+      }
 
-      navigate('/dashboard/success');
+      setUsers(prev =>
+        prev.map(user =>
+          selectedIds.includes(user.id) ? { ...user, shared: true } : user
+        )
+      );
+
+      // --- NOTIFICATION: trigger only after FileManager updates and before navigation ---
+      try {
+        const label = pendingFiles.length === 1 ? (pendingFiles[0].name || 'Untitled') : `${pendingFiles.length} files`;
+        if (helpers && typeof helpers.shareFile === 'function') {
+          helpers.shareFile(label, "You");
+        } else {
+          // fallback if NotificationContext isn't present in this route
+          showToast(`${label} shared successfully.`);
+        }
+      } catch (notifyErr) {
+        console.error('Notification helper failed:', notifyErr);
+        showToast('Files shared successfully.');
+      }
+
+      setShareSuccess(true);
+      setIsSharing(false);
+
+      setTimeout(() => {
+        navigate('/dashboard/success', {
+          state: {
+            sharedFiles: pendingFiles,
+            sharedWith: selectedUsers,
+            message: `Successfully shared ${pendingFiles.length} file${pendingFiles.length > 1 ? 's' : ''} with ${selectedUsers.length} ${selectedUsers.length === 1 ? 'person' : 'people'}`
+          }
+        });
+      }, 1000);
+
     } catch (err) {
-      console.error(err);
-      navigate('/dashboard/failed');
-    } finally {
+      console.error('Error sharing files:', err);
+      showToast('Failed to share files. Please try again.');
       setIsSharing(false);
     }
   };
@@ -235,7 +295,7 @@ export default function SharePage() {
         </div>
 
         <div className="card-wrap">
-          <div className="card" role="region" aria-label="Share file dialog">
+          <div className="card">
             <div className="subtitle-row">
               <div className="subtitle">Share your file with your team mates</div>
               <div className="share-link">🔗 Share link</div>
@@ -244,7 +304,6 @@ export default function SharePage() {
             <div className="top-row">
               <div className="email-row">
                 <input
-                  id="emailInput"
                   className="email-input"
                   placeholder="Enter names, email, or address"
                   value={emailInput}
@@ -253,7 +312,7 @@ export default function SharePage() {
               </div>
             </div>
 
-            <div className="rows" aria-live="polite">
+            <div className="rows">
               {users.map(user => (
                 <UserRow
                   key={user.id}
@@ -266,19 +325,23 @@ export default function SharePage() {
               ))}
             </div>
 
-            {/* Sharing popup inside card */}
-            {isSharing && (
-              <div className="sharing-overlay" role="alert" aria-live="assertive">
+            {(isSharing || shareSuccess) && (
+              <div className="sharing-overlay">
                 <div className="sharing-popup">
-                  <div className="spinner"></div>
-                  <div className="sharing-text">Sharing your files...</div>
+                  {isSharing ? (
+                    <div className="spinner"></div>
+                  ) : (
+                    <div className="checkmark-success">✔</div>
+                  )}
+                  <div className="sharing-text">
+                    {isSharing ? 'Sharing your files...' : 'Files shared successfully!'}
+                  </div>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Bottom-center Share Button */}
         <button
           className="bottom-share-btn"
           onClick={confirmShare}
@@ -287,10 +350,7 @@ export default function SharePage() {
           {isSharing ? 'Sharing...' : 'Share'}
         </button>
 
-        {/* Toast Notification */}
-        <div className={`toast ${toastMsg ? 'show' : ''}`} role="status" aria-live="polite">
-          {toastMsg}
-        </div>
+        <div className={`toast ${toastMsg ? 'show' : ''}`}>{toastMsg}</div>
       </div>
     </>
   );

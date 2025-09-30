@@ -4,51 +4,48 @@ import { LogOut } from "lucide-react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
+import Badge from "@mui/material/Badge";
 import { Button } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useNotifications } from "../../contexts/NotificationContext";
 
 const LOCAL_PROFILE_KEY = "profileData_v1";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { getUnreadCount } = useNotifications();
   const [userAvatar, setUserAvatar] = useState("");
   const [userName, setUserName] = useState("User");
 
-  // ✅ load profile from localStorage
   const loadProfileFromStorage = useCallback(() => {
     try {
       const raw = localStorage.getItem(LOCAL_PROFILE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw || "{}");
+        const parsed = JSON.parse(raw);
         if (parsed.fullName) setUserName(parsed.fullName);
         if (parsed.avatar) setUserAvatar(parsed.avatar);
         return;
       }
-    } catch (err) {
-      console.warn("Header: parse error", err);
+    } catch {
+      // ignore
     }
-
-    // fallback (old keys)
-    const storedUserName = localStorage.getItem("userName");
-    const storedUserAvatar = localStorage.getItem("userAvatar");
-    if (storedUserName) setUserName(storedUserName);
-    if (storedUserAvatar) setUserAvatar(storedUserAvatar);
+    const storedName = localStorage.getItem("userName");
+    const storedAvatar = localStorage.getItem("userAvatar");
+    if (storedName) setUserName(storedName);
+    if (storedAvatar) setUserAvatar(storedAvatar);
   }, []);
 
   useEffect(() => {
     loadProfileFromStorage();
-
-    const onStorage = () => loadProfileFromStorage();
-    const onProfileUpdated = () => loadProfileFromStorage();
-
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("profileUpdated", onProfileUpdated);
-
+    window.addEventListener("storage", loadProfileFromStorage);
+    window.addEventListener("profileUpdated", loadProfileFromStorage);
     return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("profileUpdated", onProfileUpdated);
+      window.removeEventListener("storage", loadProfileFromStorage);
+      window.removeEventListener("profileUpdated", loadProfileFromStorage);
     };
   }, [loadProfileFromStorage]);
 
-  // ✅ logout handler
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userName");
@@ -58,14 +55,29 @@ export default function Header() {
     window.location.href = "/";
   };
 
+  // Toggle notifications page: open if not on it, close (go to dashboard) if currently on it
+  const toggleNotifications = () => {
+    if (location.pathname === "/notifications") {
+      navigate("/dashboard");
+    } else {
+      navigate("/notifications");
+    }
+  };
+
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-white shadow">
       <div></div>
       <div className="flex items-center gap-4">
-        {/* 🔔 Notifications */}
-        <button className="text-gray-600 hover:text-gray-800">
-          <NotificationsIcon />
-        </button>
+        {/* 🔔 Notifications with badge - toggles /notifications */}
+        <Badge badgeContent={getUnreadCount()} color="error">
+          <button
+            onClick={toggleNotifications}
+            className="text-gray-600 hover:text-gray-800"
+            aria-label="Toggle notifications"
+          >
+            <NotificationsIcon />
+          </button>
+        </Badge>
 
         {/* 👤 Profile Avatar */}
         <Stack direction="row" spacing={2}>
@@ -80,7 +92,7 @@ export default function Header() {
               boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
             }}
           >
-            {!userAvatar && userName?.[0]} {/* fallback letter */}
+            {!userAvatar && userName.charAt(0)}
           </Avatar>
         </Stack>
 

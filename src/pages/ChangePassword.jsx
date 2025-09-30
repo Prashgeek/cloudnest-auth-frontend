@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useNotifications } from '../contexts/NotificationContext'; // ✅ Added
 
 const ChangePassword = () => {
   const navigate = useNavigate();
+  const { helpers } = useNotifications(); // ✅ Notification helpers
 
   const [passwords, setPasswords] = useState({
     current: "",
@@ -73,6 +75,12 @@ const ChangePassword = () => {
       setTimeout(() => setMessage({ text: "", type: "" }), 1000);
     } else {
       setMessage({ text: "Password changed successfully. Redirecting to settings...", type: "success" });
+
+      // ✅ Add security update notification
+      helpers.securityUpdate("password change");
+      
+      // ✅ Simulate login alert on new device
+      setTimeout(() => helpers.loginAlert("Mumbai, India", "Chrome on Windows"), 500);
 
       setTimeout(() => navigate("/dashboard/settings"), 1000);
     }

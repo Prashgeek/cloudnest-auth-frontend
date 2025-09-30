@@ -190,6 +190,7 @@ export default function SetPassword() {
           prev[key] = { passwordSet: true, ts: Date.now() };
         });
         localStorage.setItem("filePasswordMap", JSON.stringify(prev));
+        try { localStorage.setItem("pendingSharePassword", newPassword); } catch(e) { console.warn("could not store pendingSharePassword", e); }
       } catch {}
       navigate(returnTo, {
         replace: true,
