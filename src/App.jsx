@@ -26,6 +26,8 @@ import UpgradeSpace from './pages/UpgradeSpace';
 import ChangePassword from './pages/ChangePassword';
 import Header from './components/Dashboard/Header';
 import Footer from './components/Dashboard/Footer';
+import TermsConditions from './pages/TermsConditions';
+import ContactUs from './pages/ContactUs';
 
 // Placeholder for dashboard home
 const DashboardHome = () => (
@@ -42,6 +44,8 @@ export default function App() {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/terms" element={<TermsConditions/>}/>
+        <Route path="/contact" element={<ContactUs/>}/>
         <Route path="/reset-password" element={<ResetPasswordForm />} />
 
         {/* Protected Dashboard */}
