@@ -4,17 +4,15 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
-import { useNotifications } from "../contexts/NotificationContext";
-import { Link } from "react-router-dom"; // ✅ Added
+import { useNotifications } from "../contexts/NotificationContext"; // ✅ Added
 
 export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
-  const { helpers } = useNotifications();
+  const { helpers } = useNotifications(); // ✅ Added notification helpers
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false); // ✅ Added
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,7 +23,6 @@ export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
     const err = {};
     if (!form.email) err.email = "Email is required";
     if (!form.password) err.password = "Password is required";
-    if (!acceptedTerms) err.terms = "You must accept the terms and conditions"; // ✅ Added
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -53,6 +50,7 @@ export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
       localStorage.setItem("authToken", "token");
       localStorage.setItem("userName", "Test User");
       localStorage.setItem("userEmail", form.email);
+      // ✅ Add login alert notification
       helpers.loginAlert("Mumbai, India", getDeviceInfo());
       showToast("Login successful!");
       setLoading(false);
@@ -64,16 +62,12 @@ export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
   };
 
   const handleGoogle = async () => {
-    if (!acceptedTerms) { // ✅ Added validation
-      setErrors({ terms: "You must accept the terms and conditions" });
-      return;
-    }
-    
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1500));
     localStorage.setItem("authToken", "google_token");
     localStorage.setItem("userName", "Google User");
     localStorage.setItem("userEmail", "user@gmail.com");
+    // ✅ Add Google login alert
     helpers.loginAlert("Mumbai, India", getDeviceInfo() + " (Google SSO)");
     showToast("Login successful!");
     setLoading(false);
@@ -81,16 +75,12 @@ export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
   };
 
   const handleApple = async () => {
-    if (!acceptedTerms) { // ✅ Added validation
-      setErrors({ terms: "You must accept the terms and conditions" });
-      return;
-    }
-    
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1500));
     localStorage.setItem("authToken", "apple_token");
     localStorage.setItem("userName", "Apple User");
     localStorage.setItem("userEmail", "user@icloud.com");
+    // ✅ Add Apple login alert
     helpers.loginAlert("Mumbai, India", getDeviceInfo() + " (Apple ID)");
     showToast("Login successful!");
     setLoading(false);
@@ -149,41 +139,10 @@ export default function LoginForm({ onSwitch, onForgotPassword, showToast }) {
           </div>
           {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
         </div>
-        
-        {/* Terms and Conditions Checkbox */}
-        <div className="w-11/12 sm:w-4/5 mx-auto mt-2">
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                id="terms"
-                name="terms"
-                type="checkbox"
-                checked={acceptedTerms}
-                onChange={(e) => {
-                  setAcceptedTerms(e.target.checked);
-                  if (e.target.checked) {
-                    setErrors({ ...errors, terms: "" });
-                  }
-                }}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-            </div>
-            <div className="ml-3 text-sm">
-              <label htmlFor="terms" className="text-gray-600">
-                I agree to the{" "}
-                <Link to="/terms" className="text-blue-600 hover:underline">
-                  Terms and Conditions
-                </Link>
-              </label>
-              {errors.terms && <p className="text-xs text-red-500 mt-1">{errors.terms}</p>}
-            </div>
-          </div>
-        </div>
-        
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-11/12 sm:w-4/5 py-2.5 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-1 text-sm font-medium mt-4"
+          className="w-11/12 sm:w-4/5 py-2.5 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-1 text-sm font-medium mt-6"
         >
           {loading ? "Logging in..." : "Log In"}
         </button>

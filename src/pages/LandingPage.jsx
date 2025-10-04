@@ -32,7 +32,7 @@ export default function LandingPage() {
             {/* Links */}
             <div className="hidden md:flex items-center space-x-8">
               <motion.a
-                href="/about"
+                href="#about"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
@@ -40,7 +40,7 @@ export default function LandingPage() {
                 About
               </motion.a>
               <motion.a
-                href="/contact"
+                href="#contact"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
@@ -48,7 +48,7 @@ export default function LandingPage() {
                 Contact
               </motion.a>
               <motion.a
-                href="/terms"
+                href="#terms"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
