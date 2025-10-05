@@ -5,8 +5,14 @@ import { Toaster } from 'sonner';
 import { NotificationProvider } from './contexts/NotificationContext';
 
 import LandingPage from './pages/LandingPage';
+import TermsConditions from './pages/TermsConditions';
+import ContactUs from './pages/ContactUs';
 import AuthPage from './pages/AuthPage';
 import ResetPasswordForm from './components/ResetPasswordForm';
+
+import ContactUsContent from './pages/ContactUsContent';
+import TermsConditionsContent from './pages/TermsConditionsContent';
+
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Settings from './pages/Settings';
@@ -24,7 +30,9 @@ import Files from './pages/Files';
 import Notifications from './pages/Notifications';
 import UpgradeSpace from './pages/UpgradeSpace';
 import ChangePassword from './pages/ChangePassword';
+
 import Header from './components/Dashboard/Header';
+// Use the Dashboard Footer here
 import Footer from './components/Dashboard/Footer';
 
 // Placeholder for dashboard home
@@ -35,12 +43,31 @@ const DashboardHome = () => (
   </div>
 );
 
+// Wrappers for content-only pages
+const DashboardContactUs = () => (
+  <div className="min-h-screen flex flex-col">
+    <Header />
+    <ContactUsContent />
+    <Footer />
+  </div>
+);
+
+const DashboardTerms = () => (
+  <div className="min-h-screen flex flex-col">
+    <Header />
+    <TermsConditionsContent />
+    <Footer />
+  </div>
+);
+
 export default function App() {
   return (
     <NotificationProvider>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
 
@@ -63,23 +90,34 @@ export default function App() {
           <Route path="success" element={<SuccessPage />} />
           <Route path="failed" element={<FailedPage />} />
           <Route path="view-storage" element={<ViewStorage />} />
-
-          {/* New Pages */}
           <Route path="upgrade" element={<UpgradeSpace />} />
           <Route path="change-password" element={<ChangePassword />} />
-
-          {/* Settings */}
           <Route path="settings/*" element={<Settings />}>
             <Route index element={null} />
             <Route path="account" element={<AccountProfile />} />
           </Route>
-
-          {/* Fallback for nested dashboard routes */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
-        {/* Top-level protected Notifications route WITHOUT Sidebar.
-            It renders Header -> Notifications -> Footer so no Sidebar shows. */}
+        {/* Standalone dashboard content pages */}
+        <Route
+          path="/dashboard/contact"
+          element={
+            <ProtectedRoute>
+              <DashboardContactUs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/terms"
+          element={
+            <ProtectedRoute>
+              <DashboardTerms />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Notifications page without sidebar */}
         <Route
           path="/notifications"
           element={

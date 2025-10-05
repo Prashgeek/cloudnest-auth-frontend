@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, LinkedIn, YouTube } from "@mui/icons-material";
 
 export default function Footer() {
@@ -9,15 +10,15 @@ export default function Footer() {
         <div>
           <p className="mb-2">© 2025 Cloudnest. All rights reserved.</p>
           <div className="flex justify-center gap-6">
-            <a href="/privacy" className="hover:text-gray-300">
+            <Link to="/dashboard/terms" className="hover:text-gray-300">
               Privacy Policy
-            </a>
-            <a href="/terms" className="hover:text-gray-300">
+            </Link>
+            <Link to="/dashboard/terms" className="hover:text-gray-300">
               Terms of Services
-            </a>
-            <a href="/contact" className="hover:text-gray-300">
+            </Link>
+            <Link to="/dashboard/contact" className="hover:text-gray-300">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
         {/* Social icons */}

@@ -919,4 +919,4 @@ Shared with: ${(f.sharedWith || []).map(s => s.email).join(', ') || '—'}`);
       )}
     </div>
   );
-}
+} 

@@ -29,32 +29,33 @@ export default function LandingPage() {
                 Cloudnest
               </span>
             </motion.div>
+
             {/* Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <motion.a
-                href="#about"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+              <motion.div
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
-              >
-                About
-              </motion.a>
-              <motion.a
-                href="#contact"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Link to="/#about">About</Link>
+              </motion.div>
+
+              <motion.div
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
-              >
-                Contact
-              </motion.a>
-              <motion.a
-                href="#terms"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Link to="/contact">Contact</Link>
+              </motion.div>
+
+              <motion.div
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Terms & Conditions
-              </motion.a>
+                <Link to="/terms">Terms &amp; Conditions</Link>
+              </motion.div>
+
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   to="/auth"
@@ -64,6 +65,7 @@ export default function LandingPage() {
                 </Link>
               </motion.div>
             </div>
+
             {/* Mobile login */}
             <div className="md:hidden">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -181,158 +183,158 @@ export default function LandingPage() {
         </div>
       </section>
 
-     {/* Features Section - Smaller Width Cards & Bigger Icons */}
-<section
-  className="py-20 px-4 sm:px-8 lg:px-16"
-  style={{ backgroundColor: "#EAF7FC" }}
->
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-16">
-      <h2 className="text-4xl font-bold text-gray-900 mb-4">
-        Discover Our Powerful Features
-      </h2>
-      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-        Cloudnest is built to provide a seamless and powerful experience
-        for individuals and teams. Here's a deeper look at what we offer.
-      </p>
-    </div>
-
-    {/* Grid: 2 Columns */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {[
-        {
-          title: "Secure File Sharing",
-          desc: "Share files securely with anyone you choose, even if they don't have an account. Secure your links with passwords and custom permissions for full control.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-              />
-            </svg>
-          ),
-        },
-        {
-          title: "Receive Files from Anyone",
-          desc: "Create secure upload links to receive files and send to partners or clients. They can securely upload files directly into your account without needing to sign up themselves.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-              />
-            </svg>
-          ),
-        },
-        {
-          title: "Access from Anywhere",
-          desc: "Your files are automatically synced across all your devices: desktop, laptop, and mobile. Start a document on your computer and finish it on your phone.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-              />
-            </svg>
-          ),
-        },
-        {
-          title: "Collaborate in Real-Time",
-          desc: "Work on shared documents and projects simultaneously with your team. See live changes, leave comments, and track revisions for seamless productivity.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-          ),
-        },
-        {
-          title: "Simple & Elegant Design",
-          desc: "We designed Cloudnest to be simple and easy to use. The clean and intuitive interface lets you focus on your work, not on navigating complicated menus.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          ),
-        },
-        {
-          title: "Top-Level Encryption",
-          desc: "Every file you upload is protected with top-level encryption. We ensure your data is secure both in transit and at rest, providing you with the highest level of privacy and security.",
-          icon: (
-            <svg
-              className="w-13 h-13 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
-          ),
-        },
-      ].map((feature, idx) => (
-        <div
-          key={idx}
-          className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-200 flex flex-row items-center gap-6 h-full max-w-md mx-auto"
-        >
-          {/* Icon on left, bigger */}
-          <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 bg-transparent rounded-full">
-            {feature.icon}
+      {/* Features Section - Smaller Width Cards & Bigger Icons */}
+      <section
+        className="py-20 px-4 sm:px-8 lg:px-16"
+        style={{ backgroundColor: "#EAF7FC" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Discover Our Powerful Features
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Cloudnest is built to provide a seamless and powerful experience
+              for individuals and teams. Here's a deeper look at what we offer.
+            </p>
           </div>
-          {/* Content */}
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">{feature.desc}</p>
+
+          {/* Grid: 2 Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              {
+                title: "Secure File Sharing",
+                desc: "Share files securely with anyone you choose, even if they don't have an account. Secure your links with passwords and custom permissions for full control.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Receive Files from Anyone",
+                desc: "Create secure upload links to receive files and send to partners or clients. They can securely upload files directly into your account without needing to sign up themselves.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Access from Anywhere",
+                desc: "Your files are automatically synced across all your devices: desktop, laptop, and mobile. Start a document on your computer and finish it on your phone.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Collaborate in Real-Time",
+                desc: "Work on shared documents and projects simultaneously with your team. See live changes, leave comments, and track revisions for seamless productivity.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Simple & Elegant Design",
+                desc: "We designed Cloudnest to be simple and easy to use. The clean and intuitive interface lets you focus on your work, not on navigating complicated menus.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                title: "Top-Level Encryption",
+                desc: "Every file you upload is protected with top-level encryption. We ensure your data is secure both in transit and at rest, providing you with the highest level of privacy and security.",
+                icon: (
+                  <svg
+                    className="w-13 h-13 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                ),
+              },
+            ].map((feature, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-200 flex flex-row items-center gap-6 h-full max-w-md mx-auto"
+              >
+                {/* Icon on left, bigger */}
+                <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 bg-transparent rounded-full">
+                  {feature.icon}
+                </div>
+                {/* Content */}
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* Testimonials Section with new background */}
       <section className="py-20 bg-gray-50">
@@ -414,17 +416,17 @@ export default function LandingPage() {
             <p className="text-gray-400">© 2025 Cloudnest. All rights reserved.</p>
           </div>
           <div className="flex justify-center space-x-6 mb-8">
-            <a href="#privacy" className="text-gray-400 hover:text-white text-sm">
+            <Link to="/privacy" className="text-gray-400 hover:text-white text-sm">
               Privacy Policy
-            </a>
-            <a href="#terms" className="text-gray-400 hover:text-white text-sm">
+            </Link>
+            <Link to="/terms" className="text-gray-400 hover:text-white text-sm">
               Terms of Services
-            </a>
-            <a href="#contact" className="text-gray-400 hover:text-white text-sm">
+            </Link>
+            <Link to="/contact" className="text-gray-400 hover:text-white text-sm">
               Contact
-            </a>
+            </Link>
           </div>
-         {/* Social Media Icons - Updated to match your screenshot */}
+          {/* Social Media Icons */}
           <div className="flex justify-center space-x-4">
             {/* Facebook */}
             <a href="#facebook" className="w-10 h-10 bg-gray-800 rounded flex items-center justify-center hover:bg-gray-700 transition-colors">
@@ -433,20 +435,12 @@ export default function LandingPage() {
               </svg>
             </a>
 
-           {/* Instagram */}
-<a
-  href="#instagram"
-  className="w-10 h-10 bg-gray-800 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
->
-  <svg
-    className="w-5 h-5"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-  >
-    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-.88a1.13 1.13 0 1 1-2.25 0 1.13 1.13 0 0 1 2.25 0Z"/>
-  </svg>
-</a>
+            {/* Instagram */}
+            <a href="#instagram" className="w-10 h-10 bg-gray-800 rounded flex items-center justify-center hover:bg-gray-700 transition-colors">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-.88a1.13 1.13 0 1 1-2.25 0 1.13 1.13 0 0 1 2.25 0Z"/>
+              </svg>
+            </a>
 
             {/* Twitter/X */}
             <a href="#twitter" className="w-10 h-10 bg-gray-800 rounded flex items-center justify-center hover:bg-gray-700 transition-colors">
